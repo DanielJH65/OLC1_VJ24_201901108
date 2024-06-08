@@ -10,6 +10,8 @@ import Symbol.TipoDato;
 import Instructions.Print;
 
 import Expressions.Native;
+import Expressions.Arithmetics;
+import Expressions.ArithmeticOperators;
 
 parser code
 {:
@@ -33,11 +35,18 @@ action code
 :}
 
 terminal String DIGITO, DOUBLE, CADENA;
+terminal char CHAR;
 terminal String PYC, PARA, PARC;
-terminal String PRINTLN;
+terminal String PRINTLN, TRUE, FALSE;
+terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER;
 
 non terminal LinkedList<Instruction> INICIO, INSTRUCCIONES;
 non terminal Instruction INSTRUCCION, EXPRESION;
+
+precedence left ADD, SUB;
+precedence left MULTI, DIV, MODULE;
+precedence left POWER;
+precedence left DENIAL;
 
 start with INICIO;
 
@@ -51,7 +60,17 @@ INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b       {: RESULT = a; RESULT.add(
 INSTRUCCION ::= PRINTLN PARA EXPRESION:a PARC PYC     {: RESULT = new Print(a, aleft, aright); :}
 ;
 
-EXPRESION ::= DIGITO:a          {: RESULT = new Native(Integer.parseInt(a), new Type(TipoDato.INTEGER), aleft, aright); :}
-            | DOUBLE:a          {: RESULT = new Native(new Double(a), new Type(TipoDato.DOUBLE), aleft, aright); :}
-            | CADENA:a          {: RESULT = new Native(a, new Type(TipoDato.STRING), aleft, aright); :}
+EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetics(null, a, ArithmeticOperators.DENIAL, aleft, aright); :} %prec DENIAL
+            | EXPRESION:a MULTI MULTI EXPRESION:b     {: RESULT = new Arithmetics(a, b, ArithmeticOperators.POWER, aleft, aright); :} %prec POWER
+            | EXPRESION:a MODULE EXPRESION:b          {: RESULT = new Arithmetics(a, b, ArithmeticOperators.MODULE, aleft, aright); :}
+            | EXPRESION:a DIV EXPRESION:b             {: RESULT = new Arithmetics(a, b, ArithmeticOperators.DIVISION, aleft, aright); :}
+            | EXPRESION:a MULTI EXPRESION:b           {: RESULT = new Arithmetics(a, b, ArithmeticOperators.MULTIPLICATION, aleft, aright); :}
+            | EXPRESION:a SUB EXPRESION:b             {: RESULT = new Arithmetics(a, b, ArithmeticOperators.SUBTRACTION, aleft, aright); :}
+            | EXPRESION:a ADD EXPRESION:b             {: RESULT = new Arithmetics(a, b, ArithmeticOperators.ADDITION, aleft, aright); :}
+            | DIGITO:a                                {: RESULT = new Native(Integer.parseInt(a), new Type(TipoDato.INTEGER), aleft, aright); :}
+            | DOUBLE:a                                {: RESULT = new Native(new Double(a), new Type(TipoDato.DOUBLE), aleft, aright); :}
+            | CADENA:a                                {: RESULT = new Native(a, new Type(TipoDato.STRING), aleft, aright); :}
+            | CHAR:a                                  {: RESULT = new Native(a, new Type(TipoDato.CHAR), aleft, aright); :}
+            | TRUE:a                                  {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
+            | FALSE:a                                 {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
 ;
