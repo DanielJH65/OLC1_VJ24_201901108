@@ -1,0 +1,57 @@
+package Analizador;
+
+import java_cup.runtime.Symbol;
+import java.util.LinkedList;
+
+import Abstract.Instruction;
+import Symbol.Type;
+import Symbol.TipoDato;
+
+import Instructions.Print;
+
+import Expressions.Native;
+
+parser code
+{:
+    lexico s;
+    parser(lexico s){this.s = s;}
+    
+    public void syntax_error(Symbol s){
+        System.out.println("Error Sintactico en la linea " + (s.left) + " y columna " + 
+        (s.right) + ". No se esperaba el componente: " + (s.value) + ".");
+    }
+
+    public void unrecovered_syntax_error (Symbol s){
+        System.out.println("Error Sintactico no recuperable en la linea" + (s.left) + 
+        " y columna " + (s.right) + ". No se esperaba el componente: " + (s.value) + ".");
+    }
+
+:}
+
+action code
+{:
+:}
+
+terminal String DIGITO, DOUBLE, CADENA;
+terminal String PYC, PARA, PARC;
+terminal String PRINTLN;
+
+non terminal LinkedList<Instruction> INICIO, INSTRUCCIONES;
+non terminal Instruction INSTRUCCION, EXPRESION;
+
+start with INICIO;
+
+INICIO ::= INSTRUCCIONES:a                            {: RESULT = a; :}
+;
+
+INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b       {: RESULT = a; RESULT.add(b); :}
+                | INSTRUCCION:a                       {: RESULT = new LinkedList<>(); RESULT.add(a); :}
+;
+
+INSTRUCCION ::= PRINTLN PARA EXPRESION:a PARC PYC     {: RESULT = new Print(a, aleft, aright); :}
+;
+
+EXPRESION ::= DIGITO:a          {: RESULT = new Native(Integer.parseInt(a), new Type(TipoDato.INTEGER), aleft, aright); :}
+            | DOUBLE:a          {: RESULT = new Native(new Double(a), new Type(TipoDato.DOUBLE), aleft, aright); :}
+            | CADENA:a          {: RESULT = new Native(a, new Type(TipoDato.STRING), aleft, aright); :}
+;

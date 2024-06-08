@@ -4,6 +4,11 @@
  */
 package com.compi.proyectocompi;
 
+import Abstract.Instruction;
+import Analizador.lexico;
+import Analizador.parser;
+import Symbol.SymbolsTable;
+import Symbol.Tree;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,6 +16,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
+import java.util.LinkedList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -46,7 +53,7 @@ public class ProyectoCompi extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        txtConsola = new javax.swing.JTextPane();
         jSeparator2 = new javax.swing.JSeparator();
         TabCodigo = new javax.swing.JTabbedPane();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -66,11 +73,11 @@ public class ProyectoCompi extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTextPane1.setEditable(false);
-        jTextPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Consola"));
-        jTextPane1.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        jTextPane1.setName("txtConsola"); // NOI18N
-        jScrollPane1.setViewportView(jTextPane1);
+        txtConsola.setEditable(false);
+        txtConsola.setBorder(javax.swing.BorderFactory.createTitledBorder("Consola"));
+        txtConsola.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        txtConsola.setName("txtConsola"); // NOI18N
+        jScrollPane1.setViewportView(txtConsola);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -197,6 +204,7 @@ public class ProyectoCompi extends javax.swing.JFrame {
 
     private void jMenu3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu3MouseClicked
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_jMenu3MouseClicked
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
@@ -276,6 +284,24 @@ public class ProyectoCompi extends javax.swing.JFrame {
 
     private void btnEjecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEjecutarActionPerformed
         // TODO add your handling code here:
+        JScrollPane panel = (JScrollPane) TabCodigo.getSelectedComponent();
+        JViewport txtArea = (JViewport) panel.getComponents()[0];
+        JTextArea area = (JTextArea) txtArea.getComponents()[0];
+        try{
+             lexico lex = new lexico(new BufferedReader(new StringReader(area.getText())));
+             parser par = new parser(lex);
+             var result = par.parse();
+             var ast = new Tree((LinkedList<Instruction>) result.value);
+             var table = new SymbolsTable();
+             table.setName("Global");
+             ast.setConsole("");
+             for(var ins: ast.getInstructions()){
+                 var res = ins.interpretar(ast, table);
+             }
+             txtConsola.setText(ast.getConsole());
+        }catch ( Exception ex ){
+            System.err.println("Ocurrio un error: " + ex.getMessage());
+        }
     }//GEN-LAST:event_btnEjecutarActionPerformed
 
     private void btnRTokensActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRTokensActionPerformed
@@ -342,6 +368,6 @@ public class ProyectoCompi extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JTextPane txtConsola;
     // End of variables declaration//GEN-END:variables
 }
