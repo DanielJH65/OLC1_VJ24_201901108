@@ -47,6 +47,16 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> "*"                                         {return new Symbol(sym.MULTI, yyline, yycolumn, yytext());}
 <YYINITIAL> "/"                                         {return new Symbol(sym.DIV, yyline, yycolumn, yytext());}
 <YYINITIAL> "%"                                         {return new Symbol(sym.MODULE, yyline, yycolumn, yytext());}
+<YYINITIAL> "=="                                        {return new Symbol(sym.EQUAL, yyline, yycolumn, yytext());}
+<YYINITIAL> "!="                                        {return new Symbol(sym.DIFFERENT, yyline, yycolumn, yytext());}
+<YYINITIAL> "!"                                         {return new Symbol(sym.NOT, yyline, yycolumn, yytext());}
+<YYINITIAL> "<="                                        {return new Symbol(sym.SMALLEREQ, yyline, yycolumn, yytext());}
+<YYINITIAL> "<"                                         {return new Symbol(sym.SMALLER, yyline, yycolumn, yytext());}
+<YYINITIAL> ">="                                        {return new Symbol(sym.GREATEREQ, yyline, yycolumn, yytext());}
+<YYINITIAL> ">"                                         {return new Symbol(sym.GREATER, yyline, yycolumn, yytext());}
+<YYINITIAL> "||"                                        {return new Symbol(sym.OR, yyline, yycolumn, yytext());}
+<YYINITIAL> "&&"                                        {return new Symbol(sym.AND, yyline, yycolumn, yytext());}
+<YYINITIAL> "^"                                         {return new Symbol(sym.XOR, yyline, yycolumn, yytext());}
 
 <YYINITIAL> {DIGITO}                                    {return new Symbol(sym.DIGITO, yyline, yycolumn, yytext());}
 <YYINITIAL> {DOUBLE}                                    {return new Symbol(sym.DOUBLE, yyline, yycolumn, yytext());}

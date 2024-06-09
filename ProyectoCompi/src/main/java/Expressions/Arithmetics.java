@@ -410,7 +410,7 @@ public class Arithmetics extends Instruction {
             case INTEGER -> {
                 switch (type2) {
                     case INTEGER -> {
-                        this.getType().setType(TipoDato.INTEGER);
+                        this.getType().setType(TipoDato.DOUBLE);
                         return Math.pow((int) op1, (int) op2);
                     }
                     case DOUBLE -> {

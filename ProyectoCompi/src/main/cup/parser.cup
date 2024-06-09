@@ -12,6 +12,10 @@ import Instructions.Print;
 import Expressions.Native;
 import Expressions.Arithmetics;
 import Expressions.ArithmeticOperators;
+import Expressions.Logic;
+import Expressions.LogicOperators;
+import Expressions.Relational;
+import Expressions.RelationalOperators;
 
 parser code
 {:
@@ -38,11 +42,16 @@ terminal String DIGITO, DOUBLE, CADENA;
 terminal char CHAR;
 terminal String PYC, PARA, PARC;
 terminal String PRINTLN, TRUE, FALSE;
-terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER;
+terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER, EQUAL, NOT, SMALLER, GREATER, OR, AND, XOR, DIFFERENT, SMALLEREQ, GREATEREQ;
 
 non terminal LinkedList<Instruction> INICIO, INSTRUCCIONES;
 non terminal Instruction INSTRUCCION, EXPRESION;
 
+precedence left OR;
+precedence left AND;
+precedence left XOR;
+precedence left NOT;
+precedence left EQUAL, DIFFERENT, SMALLER, SMALLEREQ, GREATER, GREATEREQ;
 precedence left ADD, SUB;
 precedence left MULTI, DIV, MODULE;
 precedence left POWER;
@@ -67,10 +76,21 @@ EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetic
             | EXPRESION:a MULTI EXPRESION:b           {: RESULT = new Arithmetics(a, b, ArithmeticOperators.MULTIPLICATION, aleft, aright); :}
             | EXPRESION:a SUB EXPRESION:b             {: RESULT = new Arithmetics(a, b, ArithmeticOperators.SUBTRACTION, aleft, aright); :}
             | EXPRESION:a ADD EXPRESION:b             {: RESULT = new Arithmetics(a, b, ArithmeticOperators.ADDITION, aleft, aright); :}
+            | EXPRESION:a EQUAL EXPRESION:b           {: RESULT = new Relational(a, b, RelationalOperators.EQUAL, aleft, aright); :}
+            | EXPRESION:a DIFFERENT EXPRESION:b       {: RESULT = new Relational(a, b, RelationalOperators.DIFFERENT, aleft, aright); :}
+            | EXPRESION:a SMALLER EXPRESION:b         {: RESULT = new Relational(a, b, RelationalOperators.SMALLER, aleft, aright); :}
+            | EXPRESION:a SMALLEREQ EXPRESION:b       {: RESULT = new Relational(a, b, RelationalOperators.SMALLEREQUAL, aleft, aright); :}
+            | EXPRESION:a GREATER EXPRESION:b         {: RESULT = new Relational(a, b, RelationalOperators.GREATER, aleft, aright); :}
+            | EXPRESION:a GREATEREQ EXPRESION:b       {: RESULT = new Relational(a, b, RelationalOperators.GREATEREQUAL, aleft, aright); :}
+            | NOT EXPRESION:a                         {: RESULT = new Logic(null, a, LogicOperators.NOT, aleft, aright); :}
+            | EXPRESION:a XOR EXPRESION:b             {: RESULT = new Logic(a, b, LogicOperators.XOR, aleft, aright); :}
+            | EXPRESION:a AND EXPRESION:b             {: RESULT = new Logic(a, b, LogicOperators.AND, aleft, aright); :}
+            | EXPRESION:a OR EXPRESION:b              {: RESULT = new Logic(a, b, LogicOperators.OR, aleft, aright); :}
             | DIGITO:a                                {: RESULT = new Native(Integer.parseInt(a), new Type(TipoDato.INTEGER), aleft, aright); :}
             | DOUBLE:a                                {: RESULT = new Native(new Double(a), new Type(TipoDato.DOUBLE), aleft, aright); :}
             | CADENA:a                                {: RESULT = new Native(a, new Type(TipoDato.STRING), aleft, aright); :}
             | CHAR:a                                  {: RESULT = new Native(a, new Type(TipoDato.CHAR), aleft, aright); :}
             | TRUE:a                                  {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
             | FALSE:a                                 {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
+            | PARA EXPRESION:a PARC                   {: RESULT = a; :}
 ;
