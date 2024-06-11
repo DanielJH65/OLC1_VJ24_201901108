@@ -137,7 +137,7 @@ public class Relational extends Instruction {
                 switch (type2) {
                     case STRING -> {
                         this.getType().setType(TipoDato.BOOLEAN);
-                        return op1.toString().equals(op2.toString());
+                        return op1.toString().equalsIgnoreCase(op2.toString());
                     }
                     default -> {
                         return new Errores("Semantico", "Igualación entre tipos no valida", this.getLine(), this.getCol());
@@ -302,6 +302,17 @@ public class Relational extends Instruction {
                     }
                 }
             }
+            case BOOLEAN -> {
+                switch (type2) {
+                    case BOOLEAN -> {
+                        this.getType().setType(TipoDato.BOOLEAN);
+                        return (Boolean.parseBoolean(op1.toString()) ? 1 : 0) < (Boolean.parseBoolean(op2.toString()) ? 1 : 0);
+                    }
+                    default -> {
+                        return new Errores("Semantico", "Menor que entre tipos no valida", this.getLine(), this.getCol());
+                    }
+                }
+            }
             default -> {
                 return new Errores("Semantico", "Menor que entre tipos no valida", this.getLine(), this.getCol());
             }
@@ -367,6 +378,17 @@ public class Relational extends Instruction {
                     }
                     default -> {
                         return new Errores("Semantico", "Menor o igual que entre tipos no valida", this.getLine(), this.getCol());
+                    }
+                }
+            }
+            case BOOLEAN -> {
+                switch (type2) {
+                    case BOOLEAN -> {
+                        this.getType().setType(TipoDato.BOOLEAN);
+                        return (Boolean.parseBoolean(op1.toString()) ? 1 : 0) <= (Boolean.parseBoolean(op2.toString()) ? 1 : 0);
+                    }
+                    default -> {
+                        return new Errores("Semantico", "Menor que entre tipos no valida", this.getLine(), this.getCol());
                     }
                 }
             }
@@ -438,6 +460,17 @@ public class Relational extends Instruction {
                     }
                 }
             }
+            case BOOLEAN -> {
+                switch (type2) {
+                    case BOOLEAN -> {
+                        this.getType().setType(TipoDato.BOOLEAN);
+                        return (Boolean.parseBoolean(op1.toString()) ? 1 : 0) > (Boolean.parseBoolean(op2.toString()) ? 1 : 0);
+                    }
+                    default -> {
+                        return new Errores("Semantico", "Menor que entre tipos no valida", this.getLine(), this.getCol());
+                    }
+                }
+            }
             default -> {
                 return new Errores("Semantico", "Mayor que entre tipos no valida", this.getLine(), this.getCol());
             }
@@ -503,6 +536,17 @@ public class Relational extends Instruction {
                     }
                     default -> {
                         return new Errores("Semantico", "Mayor o igual que entre tipos no valida", this.getLine(), this.getCol());
+                    }
+                }
+            }
+            case BOOLEAN -> {
+                switch (type2) {
+                    case BOOLEAN -> {
+                        this.getType().setType(TipoDato.BOOLEAN);
+                        return (Boolean.parseBoolean(op1.toString()) ? 1 : 0) >= (Boolean.parseBoolean(op2.toString()) ? 1 : 0);
+                    }
+                    default -> {
+                        return new Errores("Semantico", "Menor que entre tipos no valida", this.getLine(), this.getCol());
                     }
                 }
             }

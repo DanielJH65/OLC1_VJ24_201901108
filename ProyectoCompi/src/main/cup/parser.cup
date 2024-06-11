@@ -16,6 +16,7 @@ import Expressions.Logic;
 import Expressions.LogicOperators;
 import Expressions.Relational;
 import Expressions.RelationalOperators;
+import Expressions.Cast;
 
 parser code
 {:
@@ -41,7 +42,7 @@ action code
 terminal String DIGITO, DOUBLE, CADENA;
 terminal char CHAR;
 terminal String PYC, PARA, PARC;
-terminal String PRINTLN, TRUE, FALSE;
+terminal String PRINTLN, TRUE, FALSE, RINT, RDOUBLE, RSTRING, RBOOL, RCHAR;
 terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER, EQUAL, NOT, SMALLER, GREATER, OR, AND, XOR, DIFFERENT, SMALLEREQ, GREATEREQ;
 
 non terminal LinkedList<Instruction> INICIO, INSTRUCCIONES;
@@ -86,6 +87,9 @@ EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetic
             | EXPRESION:a XOR EXPRESION:b             {: RESULT = new Logic(a, b, LogicOperators.XOR, aleft, aright); :}
             | EXPRESION:a AND EXPRESION:b             {: RESULT = new Logic(a, b, LogicOperators.AND, aleft, aright); :}
             | EXPRESION:a OR EXPRESION:b              {: RESULT = new Logic(a, b, LogicOperators.OR, aleft, aright); :}
+            | PARA RINT PARC EXPRESION:a              {: RESULT = new Cast(a, new Type(TipoDato.INTEGER), aleft, aright); :}
+            | PARA RDOUBLE PARC EXPRESION:a           {: RESULT = new Cast(a, new Type(TipoDato.DOUBLE), aleft, aright); :}
+            | PARA RCHAR PARC EXPRESION:a             {: RESULT = new Cast(a, new Type(TipoDato.CHAR), aleft, aright); :}
             | DIGITO:a                                {: RESULT = new Native(Integer.parseInt(a), new Type(TipoDato.INTEGER), aleft, aright); :}
             | DOUBLE:a                                {: RESULT = new Native(new Double(a), new Type(TipoDato.DOUBLE), aleft, aright); :}
             | CADENA:a                                {: RESULT = new Native(a, new Type(TipoDato.STRING), aleft, aright); :}

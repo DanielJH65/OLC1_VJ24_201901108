@@ -6,6 +6,7 @@ package Expressions;
 
 import Abstract.Instruction;
 import Symbol.SymbolsTable;
+import Symbol.TipoDato;
 import Symbol.Tree;
 import Symbol.Type;
 

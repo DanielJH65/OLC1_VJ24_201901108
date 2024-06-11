@@ -38,6 +38,11 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> "println"                                   {return new Symbol(sym.PRINTLN, yyline, yycolumn, yytext());}
 <YYINITIAL> "true"                                      {return new Symbol(sym.TRUE, yyline, yycolumn, yytext());}
 <YYINITIAL> "false"                                     {return new Symbol(sym.FALSE, yyline, yycolumn, yytext());}
+<YYINITIAL> "int"                                       {return new Symbol(sym.RINT, yyline, yycolumn, yytext());}
+<YYINITIAL> "double"                                    {return new Symbol(sym.RDOUBLE, yyline, yycolumn, yytext());}
+<YYINITIAL> "bool"                                      {return new Symbol(sym.RBOOL, yyline, yycolumn, yytext());}
+<YYINITIAL> "char"                                      {return new Symbol(sym.RCHAR, yyline, yycolumn, yytext());}
+<YYINITIAL> "string"                                    {return new Symbol(sym.RSTRING, yyline, yycolumn, yytext());}
 
 <YYINITIAL> ";"                                         {return new Symbol(sym.PYC, yyline, yycolumn, yytext());}
 <YYINITIAL> "("                                         {return new Symbol(sym.PARA, yyline, yycolumn, yytext());}
@@ -69,6 +74,7 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> {CHAR} {
     String cadena = yytext();
     cadena = cadena.substring(1, cadena.length()-1);
+    if(cadena.length() > 1) return new Symbol(sym.CHAR, yyline, yycolumn, cadena.charAt(1));
     return new Symbol(sym.CHAR, yyline, yycolumn, cadena.charAt(0));
 }
 

@@ -29,7 +29,12 @@ public class Print extends Instruction{
         if (result instanceof Errores){
             return result;
         }
-        tree.print(result.toString());
+        String result2 = result.toString().replace("\\\"", "\"");
+        result2 = result2.replace("\\\'", "\'");
+        result2 = result2.replace("\\t", "\t");
+        result2 = result2.replace("\\n", "\n");
+        result2 = result2.replace("\\\\", "\\");
+        tree.print(result2);
         return null;
     }
     
