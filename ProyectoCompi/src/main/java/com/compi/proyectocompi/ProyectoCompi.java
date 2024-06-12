@@ -7,6 +7,7 @@ package com.compi.proyectocompi;
 import Abstract.Instruction;
 import Analizador.lexico;
 import Analizador.parser;
+import Exceptions.Errores;
 import Symbol.SymbolsTable;
 import Symbol.Tree;
 import java.io.BufferedReader;
@@ -16,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.LinkedList;
 import javax.swing.JFileChooser;
@@ -34,12 +36,12 @@ public class ProyectoCompi extends javax.swing.JFrame {
     /**
      * Creates new form Proyecto1_201901108
      */
-    
     String activeFile = "";
     String nameFile = "";
+
     public ProyectoCompi() {
         initComponents();
-        
+
     }
 
     /**
@@ -204,7 +206,7 @@ public class ProyectoCompi extends javax.swing.JFrame {
 
     private void jMenu3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu3MouseClicked
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jMenu3MouseClicked
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
@@ -224,7 +226,7 @@ public class ProyectoCompi extends javax.swing.JFrame {
         // TODO add your handling code here:
         javax.swing.JScrollPane panel = new javax.swing.JScrollPane();
         javax.swing.JTextArea editor = new javax.swing.JTextArea();
-        
+
         JFileChooser chooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de entrada", "jc");
         chooser.setFileFilter(filter);
@@ -250,7 +252,7 @@ public class ProyectoCompi extends javax.swing.JFrame {
                 java.util.logging.Logger.getLogger(ProyectoCompi.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
         }
-        
+
         panel.setViewportView(editor);
         TabCodigo.add(nameFile, panel);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
@@ -287,19 +289,28 @@ public class ProyectoCompi extends javax.swing.JFrame {
         JScrollPane panel = (JScrollPane) TabCodigo.getSelectedComponent();
         JViewport txtArea = (JViewport) panel.getComponents()[0];
         JTextArea area = (JTextArea) txtArea.getComponents()[0];
-        try{
-             lexico lex = new lexico(new BufferedReader(new StringReader(area.getText())));
-             parser par = new parser(lex);
-             var result = par.parse();
-             var ast = new Tree((LinkedList<Instruction>) result.value);
-             var table = new SymbolsTable();
-             table.setName("Global");
-             ast.setConsole("");
-             for(var ins: ast.getInstructions()){
-                 var res = ins.interpretar(ast, table);
-             }
-             txtConsola.setText(ast.getConsole());
-        }catch ( Exception ex ){
+        try {
+            lexico lex = new lexico(new BufferedReader(new StringReader(area.getText())));
+            parser par = new parser(lex);
+            var result = par.parse();
+            var ast = new Tree((LinkedList<Instruction>) result.value);
+            var table = new SymbolsTable();
+            table.setName("Global");
+            ast.setConsole("");
+            for (var ins : ast.getInstructions()) {
+                if (ins == null) {
+                    continue;
+                }
+                var res = ins.interpretar(ast, table);
+                if (res instanceof Errores) {
+                    LinkedList<Errores> errores = ast.getErrores();
+                    errores.add((Errores) res);
+                    ast.setErrores(errores);
+                }
+            }
+            txtConsola.setText(ast.getConsole());
+            reporteErrores(lex.errores, par.errores, ast.getErrores());
+        } catch (Exception ex) {
             System.err.println("Ocurrio un error: " + ex.getMessage());
         }
     }//GEN-LAST:event_btnEjecutarActionPerformed
@@ -312,6 +323,60 @@ public class ProyectoCompi extends javax.swing.JFrame {
         // TODO add your handling code here:
         TabCodigo.remove(TabCodigo.getSelectedComponent());
     }//GEN-LAST:event_btnCerrarPActionPerformed
+
+    private void reporteErrores(LinkedList<Errores> lexicos, LinkedList<Errores> sintacticos, LinkedList<Errores> semanticos) {
+        String salida;
+        salida = "<!DOCTYPE html>\n" + "<html lang=\"es\">\n" + "<head>\n" + "    <meta charset=\"UTF-8\">\n" + "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n" + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" + "    <link href=\"https://bootswatch.com/4/superhero/bootstrap.min.css\" rel=\"stylesheet\" type=\"text/css\">\n" + "    <title>Reporte de Errores</title>\n" + "</head>\n" + "<body style=\"background: linear-gradient(to right, #141e30, #243b55);\">\n" + "    <nav class=\"navbar navbar-expand-lg navbar-dark bg-secondary\">\n" + "        <a class=\"navbar-brand\" href=\"#\">Proyecto 1 - Organizaci\u00f3n de Lenguajes y Compiladores 1</a>\n" + "        <a class=\"navbar-brand\" href=\"#\">Walter Daniel Jimenez Hernandez 201901108</a>\n" + "    </nav>\n";
+        salida += "<div class=\"jumbotron my-4 mx-4\">\n";
+        salida += "<br><center><h3>Listado de Errores</h3></center><br>\n";
+        salida += "<table class=\"table table-hover\">\n";
+        salida += "<thead>\n";
+        salida += "<tr>\n";
+        salida += "<th scope=\"col\">Tipo</th>\n";
+        salida += "<th scope=\"col\">Descripción</th>\n";
+        salida += "<th scope=\"col\">Linea</th>\n";
+        salida += "<th scope=\"col\">Columna</th>\n";
+        salida += "</tr>\n";
+        salida += "</thead>\n";
+        salida += "<tbody>\n";
+
+        for (Errores er : lexicos) {
+            salida += "<tr class=\"table-danger\">\n";
+            salida += "<td>" + er.getType() + "</td>\n";
+            salida += "<td>" + er.getDescription() + "</td>\n";
+            salida += "<td>" + er.getLine() + "</td>\n";
+            salida += "<td>" + er.getColumn() + "</td>\n";
+        }
+        for (Errores er : sintacticos) {
+            salida += "<tr class=\"table-danger\">\n";
+            salida += "<td>" + er.getType() + "</td>\n";
+            salida += "<td>" + er.getDescription() + "</td>\n";
+            salida += "<td>" + er.getLine() + "</td>\n";
+            salida += "<td>" + er.getColumn() + "</td>\n";
+        }
+        for (Errores er : semanticos) {
+            salida += "<tr class=\"table-danger\">\n";
+            salida += "<td>" + er.getType() + "</td>\n";
+            salida += "<td>" + er.getDescription() + "</td>\n";
+            salida += "<td>" + er.getLine() + "</td>\n";
+            salida += "<td>" + er.getColumn() + "</td>\n";
+        }
+
+        salida += "</tbody></table><div>\n";
+
+        try {
+            FileWriter fw = new FileWriter("Reporte de Errores.html");
+            PrintWriter pw = new PrintWriter(fw);
+
+            pw.println(salida);
+
+            fw.close();
+            JOptionPane.showMessageDialog(null, "Reporte Creado", "Satisfactorio", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al crear el archivo", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     /**
      * @param args the command line arguments

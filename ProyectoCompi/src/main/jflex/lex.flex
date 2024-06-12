@@ -1,7 +1,8 @@
 package Analizador;
 
 import java_cup.runtime.Symbol;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import Exceptions.Errores;
 
 %%
 
@@ -25,7 +26,7 @@ CADENA = [\"](\\\"|[^\"])*[\"]
 CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 
 %{
-    public ArrayList<String> errores = new ArrayList<>();
+    public LinkedList<Errores> errores = new LinkedList<>();
 %}
 
 %init{
@@ -85,5 +86,5 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 \n {yychar = 1;}
 
 . {
-    System.err.println("Este es un error lexico: "+yytext()+", en la linea: "+yyline+", en la columna: "+yycolumn);
+    errores.add(new Errores("Lexico", "Este es un error lexico: "+yytext(), yyline, yycolumn));
 }

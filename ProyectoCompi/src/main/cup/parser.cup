@@ -18,19 +18,21 @@ import Expressions.Relational;
 import Expressions.RelationalOperators;
 import Expressions.Cast;
 
+import Exceptions.Errores;
+
 parser code
 {:
     lexico s;
     parser(lexico s){this.s = s;}
+
+    public LinkedList<Errores> errores = new LinkedList<>();
     
     public void syntax_error(Symbol s){
-        System.out.println("Error Sintactico en la linea " + (s.left) + " y columna " + 
-        (s.right) + ". No se esperaba el componente: " + (s.value) + ".");
+        errores.add(new Errores("Sintactico", "No se esperaba el componente: " + s.value, s.left, s.right));
     }
 
     public void unrecovered_syntax_error (Symbol s){
-        System.out.println("Error Sintactico no recuperable en la linea" + (s.left) + 
-        " y columna " + (s.right) + ". No se esperaba el componente: " + (s.value) + ".");
+        errores.add(new Errores("Sintactico Irrecuperable", "No se esperaba el componente: " + s.value, s.left, s.right));
     }
 
 :}
@@ -68,6 +70,8 @@ INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b       {: RESULT = a; RESULT.add(
 ;
 
 INSTRUCCION ::= PRINTLN PARA EXPRESION:a PARC PYC     {: RESULT = new Print(a, aleft, aright); :}
+            | error PYC
+            | error
 ;
 
 EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetics(null, a, ArithmeticOperators.DENIAL, aleft, aright); :} %prec DENIAL
