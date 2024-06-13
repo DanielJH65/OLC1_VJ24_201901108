@@ -18,10 +18,10 @@ import Exceptions.Errores;
 
 COMUL  = ("//".*\r\n)|("//".*\n)|("//".*\r)
 COMML  = "<!""!"*([^!>]|[^!]">"|"!"[^>])*"!"*"!>"
-BLANCO = [ \r\t]+
+BLANCO = [ \r\t\f\n]+
 DIGITO = [0-9]+
 DOUBLE = [0-9]+"."[0-9]+
-ID     = [a-zA-Z][a-zA-Z0-9]*
+ID     = [a-zA-Z][a-zA-Z0-9_]*
 CADENA = [\"](\\\"|[^\"])*[\"]
 CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 
@@ -44,6 +44,8 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> "bool"                                      {return new Symbol(sym.RBOOL, yyline, yycolumn, yytext());}
 <YYINITIAL> "char"                                      {return new Symbol(sym.RCHAR, yyline, yycolumn, yytext());}
 <YYINITIAL> "string"                                    {return new Symbol(sym.RSTRING, yyline, yycolumn, yytext());}
+<YYINITIAL> "var"                                       {return new Symbol(sym.RVAR, yyline, yycolumn, yytext());}
+<YYINITIAL> "const"                                     {return new Symbol(sym.RCONST, yyline, yycolumn, yytext());}
 
 <YYINITIAL> ";"                                         {return new Symbol(sym.PYC, yyline, yycolumn, yytext());}
 <YYINITIAL> "("                                         {return new Symbol(sym.PARA, yyline, yycolumn, yytext());}
@@ -63,9 +65,12 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> "||"                                        {return new Symbol(sym.OR, yyline, yycolumn, yytext());}
 <YYINITIAL> "&&"                                        {return new Symbol(sym.AND, yyline, yycolumn, yytext());}
 <YYINITIAL> "^"                                         {return new Symbol(sym.XOR, yyline, yycolumn, yytext());}
+<YYINITIAL> ":"                                         {return new Symbol(sym.DOSP, yyline, yycolumn, yytext());}
+<YYINITIAL> "="                                         {return new Symbol(sym.EQUALP, yyline, yycolumn, yytext());}
 
 <YYINITIAL> {DIGITO}                                    {return new Symbol(sym.DIGITO, yyline, yycolumn, yytext());}
 <YYINITIAL> {DOUBLE}                                    {return new Symbol(sym.DOUBLE, yyline, yycolumn, yytext());}
+<YYINITIAL> {ID}                                        {return new Symbol(sym.ID, yyline, yycolumn, yytext());}
 
 <YYINITIAL> {CADENA} {
     String cadena = yytext();

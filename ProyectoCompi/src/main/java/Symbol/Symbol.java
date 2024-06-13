@@ -12,16 +12,21 @@ public class Symbol {
     private Type type;
     private String id;
     private Object value;
+    private boolean mutable;
 
-    public Symbol(Type type, String id, Object value) {
+    public Symbol(Type type, String id, Object value, boolean mutable) {
         this.type = type;
         this.id = id;
         this.value = value;
+        this.mutable = mutable;
     }
 
-    public Symbol(Type type, String id) {
-        this.type = type;
-        this.id = id;
+    public boolean isMutable() {
+        return mutable;
+    }
+
+    public void setMutable(boolean mutable) {
+        this.mutable = mutable;
     }
 
     public Type getType() {

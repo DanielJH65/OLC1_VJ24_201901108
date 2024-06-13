@@ -227,7 +227,7 @@ public class Relational extends Instruction {
                 switch (type2) {
                     case STRING -> {
                         this.getType().setType(TipoDato.BOOLEAN);
-                        return !op1.toString().equals(op2.toString());
+                        return !op1.toString().equalsIgnoreCase(op2.toString());
                     }
                     default -> {
                         return new Errores("Semantico", "Diferenciación entre tipos no valida", this.getLine(), this.getCol());

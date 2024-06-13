@@ -371,7 +371,7 @@ public class ProyectoCompi extends javax.swing.JFrame {
             pw.println(salida);
 
             fw.close();
-            JOptionPane.showMessageDialog(null, "Reporte Creado", "Satisfactorio", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Reporte de errores Creado", "Satisfactorio", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
             JOptionPane.showMessageDialog(null, "Error al crear el archivo", "Error", JOptionPane.ERROR_MESSAGE);

@@ -8,6 +8,9 @@ import Symbol.Type;
 import Symbol.TipoDato;
 
 import Instructions.Print;
+import Instructions.Statement;
+import Instructions.VarAssignement;
+import Instructions.VarIncDec;
 
 import Expressions.Native;
 import Expressions.Arithmetics;
@@ -17,6 +20,7 @@ import Expressions.LogicOperators;
 import Expressions.Relational;
 import Expressions.RelationalOperators;
 import Expressions.Cast;
+import Expressions.VarAcces;
 
 import Exceptions.Errores;
 
@@ -41,14 +45,17 @@ action code
 {:
 :}
 
-terminal String DIGITO, DOUBLE, CADENA;
+terminal String DIGITO, DOUBLE, CADENA, ID;
 terminal char CHAR;
 terminal String PYC, PARA, PARC;
-terminal String PRINTLN, TRUE, FALSE, RINT, RDOUBLE, RSTRING, RBOOL, RCHAR;
-terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER, EQUAL, NOT, SMALLER, GREATER, OR, AND, XOR, DIFFERENT, SMALLEREQ, GREATEREQ;
+terminal String PRINTLN, TRUE, FALSE, RINT, RDOUBLE, RSTRING, RBOOL, RCHAR, RVAR, RCONST;
+terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER, DOSP, EQUALP;
+terminal STRING EQUAL, NOT, SMALLER, GREATER, OR, AND, XOR, DIFFERENT, SMALLEREQ, GREATEREQ;
 
 non terminal LinkedList<Instruction> INICIO, INSTRUCCIONES;
-non terminal Instruction INSTRUCCION, EXPRESION;
+non terminal Instruction INSTRUCCION, EXPRESION, PRINT, DECLARACION, ASIGNACION;
+non terminal Type TIPOS;
+non terminal Object MUTABLE;
 
 precedence left OR;
 precedence left AND;
@@ -69,9 +76,33 @@ INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b       {: RESULT = a; RESULT.add(
                 | INSTRUCCION:a                       {: RESULT = new LinkedList<>(); RESULT.add(a); :}
 ;
 
-INSTRUCCION ::= PRINTLN PARA EXPRESION:a PARC PYC     {: RESULT = new Print(a, aleft, aright); :}
+ INSTRUCCION ::= PRINT:a                              {: RESULT = a; :} 
+            | DECLARACION:a                           {: RESULT = a; :}
+            | ASIGNACION:a                            {: RESULT = a; :}
             | error PYC
             | error
+;
+
+PRINT ::= PRINTLN PARA EXPRESION:a PARC PYC           {: RESULT = new Print(a, aleft, aright); :}
+;
+
+DECLARACION ::= MUTABLE:a ID:b DOSP TIPOS:c EQUALP EXPRESION:d PYC              {: RESULT = new Statement(Boolean.parseBoolean(a.toString()), b.toString(), d, c, aleft, aright); :}
+            | MUTABLE:a ID:b DOSP TIPOS:c PYC                                   {: RESULT = new Statement(Boolean.parseBoolean(a.toString()), b.toString(), c, aleft, aright); :}
+;
+
+ASIGNACION ::= ID:a EQUALP EXPRESION:b PYC            {: RESULT = new VarAssignement(a, b, aleft, aright); :}
+            | ID:a ADD ADD PYC                        {: RESULT = new VarIncDec(a, true, aleft, aright); :}
+            | ID:a SUB SUB PYC                        {: RESULT = new VarIncDec(a, false, aleft, aright); :}
+;
+
+MUTABLE ::= RVAR                                      {: RESULT = true; :}
+            | RCONST                                  {: RESULT = false; :}
+;
+TIPOS ::=   RINT                                      {: RESULT = new Type(TipoDato.INTEGER); :}
+            | RDOUBLE                                 {: RESULT = new Type(TipoDato.DOUBLE); :}
+            | RSTRING                                 {: RESULT = new Type(TipoDato.STRING); :}
+            | RCHAR                                   {: RESULT = new Type(TipoDato.CHAR); :}
+            | RBOOL                                   {: RESULT = new Type(TipoDato.BOOLEAN); :}
 ;
 
 EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetics(null, a, ArithmeticOperators.DENIAL, aleft, aright); :} %prec DENIAL
@@ -100,5 +131,6 @@ EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetic
             | CHAR:a                                  {: RESULT = new Native(a, new Type(TipoDato.CHAR), aleft, aright); :}
             | TRUE:a                                  {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
             | FALSE:a                                 {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
+            | ID:a                                    {: RESULT = new VarAcces(a, aleft, aright); :}
             | PARA EXPRESION:a PARC                   {: RESULT = a; :}
 ;

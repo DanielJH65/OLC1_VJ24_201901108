@@ -5,7 +5,9 @@
 package Instructions;
 
 import Abstract.Instruction;
+import Exceptions.Errores;
 import Expressions.Native;
+import Symbol.Symbol;
 import Symbol.SymbolsTable;
 import Symbol.TipoDato;
 import Symbol.Tree;
@@ -15,21 +17,21 @@ import Symbol.Type;
  *
  * @author daniel
  */
-public class Variable extends Instruction{
-    private String modifier;
+public class Statement extends Instruction{
+    private boolean mutable;
     private String id;
     private Instruction expression;
 
-    public Variable(String modifier, String id, Instruction expression, Type type, int line, int col) {
+    public Statement(boolean mutable, String id, Instruction expression, Type type, int line, int col) {
         super(type, line, col);
-        this.modifier = modifier;
+        this.mutable = mutable;
         this.id = id;
         this.expression = expression;
     }
 
-    public Variable(String modifier, String id, Type type, int line, int col) {
+    public Statement(boolean mutable, String id, Type type, int line, int col) {
         super(type, line, col);
-        this.modifier = modifier;
+        this.mutable = mutable;
         this.id = id;
         switch (type.getType()){
             case INTEGER ->
@@ -47,7 +49,25 @@ public class Variable extends Instruction{
 
     @Override
     public Object interpretar(Tree tree, SymbolsTable table) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        var expression = this.expression.interpretar(tree, table);
+        
+        if(expression instanceof Errores){
+            return expression;
+        }
+        
+        if(this.expression.getType().getType() != this.getType().getType()){
+            return new Errores("Sintactico", "Variable de distinto tipo", this.getLine(), this.getCol());
+        }
+        
+        Symbol sym = new Symbol(this.getType(), this.id, expression, this.mutable);
+        
+        boolean created = table.setVariable(sym);
+        
+        if(!created){
+            return new Errores("Sintactico", "Identificador de variable existente", this.getLine(), this.getCol());
+        }
+        
+        return null;
     }
     
     

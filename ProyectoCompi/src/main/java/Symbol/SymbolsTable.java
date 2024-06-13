@@ -11,6 +11,7 @@ import java.util.HashMap;
  * @author daniel
  */
 public class SymbolsTable {
+
     private SymbolsTable previousTable;
     private HashMap<String, Object> table;
     private String name;
@@ -49,7 +50,24 @@ public class SymbolsTable {
     public void setName(String name) {
         this.name = name;
     }
+
+    public boolean setVariable(Symbol variable) {
+        Symbol match = (Symbol) this.table.get(variable.getId().toLowerCase());
+
+        if (match == null) {
+            this.table.put(variable.getId().toLowerCase(), variable);
+            return true;
+        }
+        return false;
+    }
     
-    
-    
+    public Symbol getVariable(String id){
+        Symbol match = (Symbol) this.table.get(id.toLowerCase());
+        
+        if(match != null){
+            return match;
+        }
+        return null;
+    }
+
 }
