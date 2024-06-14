@@ -6,6 +6,7 @@ package Instructions;
 
 import Abstract.Instruction;
 import Exceptions.Errores;
+import Reportes.Simbolo;
 import Symbol.SymbolsTable;
 import Symbol.TipoDato;
 import Symbol.Tree;
@@ -53,7 +54,13 @@ public class Match extends Instruction {
         if(this.def != null){
             this.def.interpretar(tree, newTable);
         }
-
+        LinkedList<Simbolo> newList = newTable.getSimbolos();
+        for(var sym : newList){
+            sym.setScope("While " + this.getLine());
+        }
+        if (newList != null) {
+            table.getSymbols().addAll(newList);
+        }
         return null;
     }
 

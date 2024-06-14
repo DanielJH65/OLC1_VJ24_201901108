@@ -49,6 +49,11 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> "if"                                        {return new Symbol(sym.RIF, yyline, yycolumn, yytext());}
 <YYINITIAL> "else"                                      {return new Symbol(sym.RELSE, yyline, yycolumn, yytext());}
 <YYINITIAL> "match"                                     {return new Symbol(sym.RMATCH, yyline, yycolumn, yytext());}
+<YYINITIAL> "do"                                        {return new Symbol(sym.RDO, yyline, yycolumn, yytext());}
+<YYINITIAL> "while"                                     {return new Symbol(sym.RWHILE, yyline, yycolumn, yytext());}
+<YYINITIAL> "for"                                       {return new Symbol(sym.RFOR, yyline, yycolumn, yytext());}
+<YYINITIAL> "continue"                                  {return new Symbol(sym.RCONTINUE, yyline, yycolumn, yytext());}
+<YYINITIAL> "break"                                     {return new Symbol(sym.RBREAK, yyline, yycolumn, yytext());}
 
 <YYINITIAL> ";"                                         {return new Symbol(sym.PYC, yyline, yycolumn, yytext());}
 <YYINITIAL> "("                                         {return new Symbol(sym.PARA, yyline, yycolumn, yytext());}

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Instructions;
 
 import Abstract.Instruction;
@@ -13,28 +9,23 @@ import Symbol.Tree;
 import Symbol.Type;
 import java.util.LinkedList;
 
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 /**
  *
  * @author daniel
  */
-public class If extends Instruction {
+public class DoWhile extends Instruction {
 
     private Instruction condition;
     private LinkedList<Instruction> instructions;
-    private LinkedList<Instruction> instructionsElse;
 
-    public If(Instruction condition, LinkedList<Instruction> instructions, int line, int col) {
+    public DoWhile(Instruction condition, LinkedList<Instruction> instructions, int line, int col) {
         super(new Type(TipoDato.VOID), line, col);
         this.condition = condition;
         this.instructions = instructions;
-        this.instructionsElse = null;
-    }
-
-    public If(Instruction condition, LinkedList<Instruction> instructions, LinkedList<Instruction> instructionsElse, int line, int col) {
-        super(new Type(TipoDato.VOID), line, col);
-        this.condition = condition;
-        this.instructions = instructions;
-        this.instructionsElse = instructionsElse;
     }
 
     @Override
@@ -48,26 +39,19 @@ public class If extends Instruction {
         }
 
         var newTable = new SymbolsTable(table);
-        if (Boolean.parseBoolean(exp.toString())) {
+
+        do {
             for (var ins : this.instructions) {
                 var result = ins.interpretar(tree, newTable);
                 if (result instanceof Errores) {
                     tree.getErrores().add((Errores) result);
                 }
             }
-        } else {
-            if (this.instructionsElse != null) {
-                for (var ins : this.instructionsElse) {
-                    var result = ins.interpretar(tree, newTable);
-                    if (result instanceof Errores) {
-                        tree.getErrores().add((Errores) result);
-                    }
-                }
-            }
-        }
+        } while (Boolean.parseBoolean(this.condition.interpretar(tree, table).toString()));
+
         LinkedList<Simbolo> newList = newTable.getSimbolos();
         for (var sym : newList) {
-            sym.setScope("If " + this.getLine());
+            sym.setScope("Do-While " + this.getLine());
         }
         if (newList != null) {
             table.getSymbols().addAll(newList);

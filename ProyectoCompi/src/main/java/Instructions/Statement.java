@@ -59,7 +59,7 @@ public class Statement extends Instruction{
             return new Errores("Sintactico", "Variable de distinto tipo", this.getLine(), this.getCol());
         }
         
-        Symbol sym = new Symbol(this.getType(), this.id, expression, this.mutable);
+        Symbol sym = new Symbol(this.getType(), this.id, expression, this.mutable, this.getLine(), this.getCol());
         
         boolean created = table.setVariable(sym);
         

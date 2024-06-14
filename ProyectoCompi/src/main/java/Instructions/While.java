@@ -17,24 +17,15 @@ import java.util.LinkedList;
  *
  * @author daniel
  */
-public class If extends Instruction {
+public class While extends Instruction {
 
     private Instruction condition;
     private LinkedList<Instruction> instructions;
-    private LinkedList<Instruction> instructionsElse;
 
-    public If(Instruction condition, LinkedList<Instruction> instructions, int line, int col) {
+    public While(Instruction condition, LinkedList<Instruction> instructions, int line, int col) {
         super(new Type(TipoDato.VOID), line, col);
         this.condition = condition;
         this.instructions = instructions;
-        this.instructionsElse = null;
-    }
-
-    public If(Instruction condition, LinkedList<Instruction> instructions, LinkedList<Instruction> instructionsElse, int line, int col) {
-        super(new Type(TipoDato.VOID), line, col);
-        this.condition = condition;
-        this.instructions = instructions;
-        this.instructionsElse = instructionsElse;
     }
 
     @Override
@@ -48,26 +39,18 @@ public class If extends Instruction {
         }
 
         var newTable = new SymbolsTable(table);
-        if (Boolean.parseBoolean(exp.toString())) {
+
+        while (Boolean.parseBoolean(this.condition.interpretar(tree, table).toString())) {
             for (var ins : this.instructions) {
                 var result = ins.interpretar(tree, newTable);
                 if (result instanceof Errores) {
                     tree.getErrores().add((Errores) result);
                 }
             }
-        } else {
-            if (this.instructionsElse != null) {
-                for (var ins : this.instructionsElse) {
-                    var result = ins.interpretar(tree, newTable);
-                    if (result instanceof Errores) {
-                        tree.getErrores().add((Errores) result);
-                    }
-                }
-            }
         }
         LinkedList<Simbolo> newList = newTable.getSimbolos();
-        for (var sym : newList) {
-            sym.setScope("If " + this.getLine());
+        for(var sym : newList){
+            sym.setScope("While " + this.getLine());
         }
         if (newList != null) {
             table.getSymbols().addAll(newList);

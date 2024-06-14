@@ -67,11 +67,17 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Tabla de Simbolos"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRSimbolosActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="btnRErrores">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Errores"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRErroresActionPerformed"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>

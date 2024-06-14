@@ -14,6 +14,8 @@ import Instructions.VarIncDec;
 import Instructions.If;
 import Instructions.Match;
 import Instructions.Case;
+import Instructions.While;
+import Instructions.DoWhile;
 
 import Expressions.Native;
 import Expressions.Arithmetics;
@@ -52,12 +54,13 @@ terminal String DIGITO, DOUBLE, CADENA, ID;
 terminal char CHAR;
 terminal String PYC, PARA, PARC, LLAVEA, LLAVEC, GUION;
 terminal String PRINTLN, TRUE, FALSE, RINT, RDOUBLE, RSTRING, RBOOL, RCHAR, RVAR, RCONST, RIF, RELSE, RMATCH;
+terminal String RWHILE, RDO, RFOR, RCONTINUE, RBREAK;
 terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER, DOSP, EQUALP;
 terminal STRING EQUAL, NOT, SMALLER, GREATER, OR, AND, XOR, DIFFERENT, SMALLEREQ, GREATEREQ;
 
 non terminal LinkedList<Instruction> INICIO, INSTRUCCIONES;
 non terminal LinkedList<Case> CASESLIST;
-non terminal Instruction INSTRUCCION, EXPRESION, PRINT, DECLARACION, ASIGNACION, IF, MATCH;
+non terminal Instruction INSTRUCCION, EXPRESION, PRINT, DECLARACION, ASIGNACION, IF, MATCH, WHILE, DOWHILE;
 non terminal Case CASE, DEFAULT;
 non terminal Type TIPOS;
 non terminal Object MUTABLE;
@@ -86,6 +89,8 @@ INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b       {: RESULT = a; RESULT.add(
             | ASIGNACION:a                            {: RESULT = a; :}
             | IF:a                                    {: RESULT = a; :}
             | MATCH:a                                 {: RESULT = a; :}
+            | WHILE:a                                 {: RESULT = a; :}
+            | DOWHILE:a                               {: RESULT = a; :}
             | error PYC
             | error
 ;
@@ -120,6 +125,12 @@ CASE ::= EXPRESION:a EQUALP GREATER LLAVEA INSTRUCCIONES:b LLAVEC               
 ;
 
 DEFAULT ::= GUION EQUALP GREATER LLAVEA INSTRUCCIONES:a LLAVEC                  {: RESULT = new Case(null, a, aleft, aright); :}
+;
+
+WHILE ::= RWHILE PARA EXPRESION:a PARC LLAVEA INSTRUCCIONES:b LLAVEC            {: RESULT = new While(a, b, aleft, aright); :}
+;
+
+DOWHILE ::= RDO LLAVEA INSTRUCCIONES:a LLAVEC RWHILE PARA EXPRESION:b PARC PYC  {: RESULT = new DoWhile(b, a, aleft, aright); :}
 ;
 
 MUTABLE ::= RVAR                                      {: RESULT = true; :}

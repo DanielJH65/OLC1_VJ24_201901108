@@ -2,43 +2,31 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Symbol;
+package Reportes;
+
+import Symbol.TipoDato;
 
 /**
  *
  * @author daniel
  */
-public class Symbol {
-    private Type type;
+public class Simbolo {
     private String id;
+    private TipoDato type;
+    private String mutability;
+    private String scope;
     private Object value;
-    private boolean mutable;
     private int line;
     private int column;
 
-    public Symbol(Type type, String id, Object value, boolean mutable, int line, int column) {
-        this.type = type;
+    public Simbolo(String id, TipoDato type, String mutability, String scope, Object value, int line, int column) {
         this.id = id;
+        this.type = type;
+        this.mutability = mutability;
+        this.scope = scope;
         this.value = value;
-        this.mutable = mutable;
         this.line = line;
         this.column = column;
-    }
-
-    public boolean isMutable() {
-        return mutable;
-    }
-
-    public void setMutable(boolean mutable) {
-        this.mutable = mutable;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
     }
 
     public String getId() {
@@ -47,6 +35,30 @@ public class Symbol {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public TipoDato getType() {
+        return type;
+    }
+
+    public void setType(TipoDato type) {
+        this.type = type;
+    }
+
+    public String getMutability() {
+        return mutability;
+    }
+
+    public void setMutability(String mutability) {
+        this.mutability = mutability;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 
     public Object getValue() {

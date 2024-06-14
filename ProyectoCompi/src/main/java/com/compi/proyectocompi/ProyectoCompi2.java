@@ -8,6 +8,7 @@ import Abstract.Instruction;
 import Analizador.lexico;
 import Analizador.parser;
 import Exceptions.Errores;
+import Reportes.Simbolo;
 import Symbol.SymbolsTable;
 import Symbol.Tree;
 import java.io.BufferedReader;
@@ -38,6 +39,9 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
      */
     String activeFile = "";
     String nameFile = "";
+    String salidaErrores = "";
+    LinkedList<Errores> errores = new LinkedList<>();
+    LinkedList<Simbolo> symbols = new LinkedList<>();
 
     public ProyectoCompi2() {
         initComponents();
@@ -156,9 +160,19 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
         jMenu4.add(btnRTokens);
 
         btnRSimbolos.setText("Tabla de Simbolos");
+        btnRSimbolos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRSimbolosActionPerformed(evt);
+            }
+        });
         jMenu4.add(btnRSimbolos);
 
         btnRErrores.setText("Errores");
+        btnRErrores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRErroresActionPerformed(evt);
+            }
+        });
         jMenu4.add(btnRErrores);
 
         jMenuBar1.add(jMenu4);
@@ -286,6 +300,8 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
 
     private void btnEjecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEjecutarActionPerformed
         // TODO add your handling code here:
+        errores.clear();
+        symbols.clear();
         JScrollPane panel = (JScrollPane) TabCodigo.getSelectedComponent();
         JViewport txtArea = (JViewport) panel.getComponents()[0];
         JTextArea area = (JTextArea) txtArea.getComponents()[0];
@@ -307,7 +323,11 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
                 }
             }
             txtConsola.setText(ast.getConsole());
-            reporteErrores(lex.errores, par.errores, ast.getErrores());
+            table.getSymbols().addAll(table.getSimbolos());
+            symbols.addAll(table.getSymbols());
+            errores.addAll(lex.errores);
+            errores.addAll(par.errores);
+            errores.addAll(ast.getErrores());
         } catch (Exception ex) {
             System.err.println("Ocurrio un error: " + ex.getMessage());
         }
@@ -322,7 +342,17 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
         TabCodigo.remove(TabCodigo.getSelectedComponent());
     }//GEN-LAST:event_btnCerrarPActionPerformed
 
-    private void reporteErrores(LinkedList<Errores> lexicos, LinkedList<Errores> sintacticos, LinkedList<Errores> semanticos) {
+    private void btnRSimbolosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRSimbolosActionPerformed
+        // TODO add your handling code here:
+        reporteSimbolos(symbols);
+    }//GEN-LAST:event_btnRSimbolosActionPerformed
+
+    private void btnRErroresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRErroresActionPerformed
+        // TODO add your handling code here:
+        reporteErrores(errores);
+    }//GEN-LAST:event_btnRErroresActionPerformed
+
+    private void reporteErrores(LinkedList<Errores> errores) {
         String salida;
         salida = "<!DOCTYPE html>\n" + "<html lang=\"es\">\n" + "<head>\n" + "    <meta charset=\"UTF-8\">\n" + "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n" + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" + "    <link href=\"https://bootswatch.com/4/superhero/bootstrap.min.css\" rel=\"stylesheet\" type=\"text/css\">\n" + "    <title>Reporte de Errores</title>\n" + "</head>\n" + "<body style=\"background: linear-gradient(to right, #141e30, #243b55);\">\n" + "    <nav class=\"navbar navbar-expand-lg navbar-dark bg-secondary\">\n" + "        <a class=\"navbar-brand\" href=\"#\">Proyecto 1 - Organizaci\u00f3n de Lenguajes y Compiladores 1</a>\n" + "        <a class=\"navbar-brand\" href=\"#\">Walter Daniel Jimenez Hernandez 201901108</a>\n" + "    </nav>\n";
         salida += "<div class=\"jumbotron my-4 mx-4\">\n";
@@ -338,21 +368,7 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
         salida += "</thead>\n";
         salida += "<tbody>\n";
 
-        for (Errores er : lexicos) {
-            salida += "<tr class=\"table-danger\">\n";
-            salida += "<td>" + er.getType() + "</td>\n";
-            salida += "<td>" + er.getDescription() + "</td>\n";
-            salida += "<td>" + er.getLine() + "</td>\n";
-            salida += "<td>" + er.getColumn() + "</td>\n";
-        }
-        for (Errores er : sintacticos) {
-            salida += "<tr class=\"table-danger\">\n";
-            salida += "<td>" + er.getType() + "</td>\n";
-            salida += "<td>" + er.getDescription() + "</td>\n";
-            salida += "<td>" + er.getLine() + "</td>\n";
-            salida += "<td>" + er.getColumn() + "</td>\n";
-        }
-        for (Errores er : semanticos) {
+        for (Errores er : errores) {
             salida += "<tr class=\"table-danger\">\n";
             salida += "<td>" + er.getType() + "</td>\n";
             salida += "<td>" + er.getDescription() + "</td>\n";
@@ -370,6 +386,58 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
 
             fw.close();
             JOptionPane.showMessageDialog(null, "Reporte de errores Creado", "Satisfactorio", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al crear el archivo", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void reporteSimbolos(LinkedList<Simbolo> symbols) {
+        String salida;
+        salida = "<!DOCTYPE html>\n" + "<html lang=\"es\">\n" + "<head>\n" + "    <meta charset=\"UTF-8\">\n" +"    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n" 
+                + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" 
+                + "    <link href=\"https://bootswatch.com/4/superhero/bootstrap.min.css\" rel=\"stylesheet\" type=\"text/css\">\n" 
+                + "    <title>Reporte de Simbolos</title>\n" + "</head>\n" + "<body style=\"background: linear-gradient(to right, #141e30, #243b55);\">\n" 
+                + "    <nav class=\"navbar navbar-expand-lg navbar-dark bg-secondary\">\n" 
+                + "        <a class=\"navbar-brand\" href=\"#\">Proyecto 1 - Organizaci\u00f3n de Lenguajes y Compiladores 1</a>\n" 
+                + "        <a class=\"navbar-brand\" href=\"#\">Walter Daniel Jimenez Hernandez 201901108</a>\n" + "    </nav>\n";
+        salida += "<div class=\"jumbotron my-4 mx-4\">\n";
+        salida += "<br><center><h3>Listado de Simbolos</h3></center><br>\n";
+        salida += "<table class=\"table table-hover\">\n";
+        salida += "<thead>\n";
+        salida += "<tr>\n";
+        salida += "<th scope=\"col\">Id</th>\n";
+        salida += "<th scope=\"col\">Tipo</th>\n";
+        salida += "<th scope=\"col\">Mutabilidad</th>\n";
+        salida += "<th scope=\"col\">Entorno</th>\n";
+        salida += "<th scope=\"col\">Valor</th>\n";
+        salida += "<th scope=\"col\">Linea</th>\n";
+        salida += "<th scope=\"col\">Columna</th>\n";
+        salida += "</tr>\n";
+        salida += "</thead>\n";
+        salida += "<tbody>\n";
+
+        for (Simbolo sym : symbols) {
+            salida += "<tr class=\"table-primary\">\n";
+            salida += "<td>" + sym.getId() + "</td>\n";
+            salida += "<td>" + sym.getType() + "</td>\n";
+            salida += "<td>" + sym.getMutability() + "</td>\n";
+            salida += "<td>" + sym.getScope() + "</td>\n";
+            salida += "<td>" + sym.getValue() + "</td>\n";
+            salida += "<td>" + sym.getLine() + "</td>\n";
+            salida += "<td>" + sym.getColumn() + "</td>\n";
+        }
+
+        salida += "</tbody></table><div>\n";
+
+        try {
+            FileWriter fw = new FileWriter("Reporte de Simbolos.html");
+            PrintWriter pw = new PrintWriter(fw);
+
+            pw.println(salida);
+
+            fw.close();
+            JOptionPane.showMessageDialog(null, "Reporte de simbolos Creado", "Satisfactorio", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
             JOptionPane.showMessageDialog(null, "Error al crear el archivo", "Error", JOptionPane.ERROR_MESSAGE);

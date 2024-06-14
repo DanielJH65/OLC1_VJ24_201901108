@@ -61,5 +61,5 @@ public class Tree {
     public void print(String value) {
         this.console += value + "\n";
     }
-
+    
 }
