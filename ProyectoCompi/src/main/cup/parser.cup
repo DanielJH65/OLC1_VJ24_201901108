@@ -11,6 +11,9 @@ import Instructions.Print;
 import Instructions.Statement;
 import Instructions.VarAssignement;
 import Instructions.VarIncDec;
+import Instructions.If;
+import Instructions.Match;
+import Instructions.Case;
 
 import Expressions.Native;
 import Expressions.Arithmetics;
@@ -47,13 +50,15 @@ action code
 
 terminal String DIGITO, DOUBLE, CADENA, ID;
 terminal char CHAR;
-terminal String PYC, PARA, PARC;
-terminal String PRINTLN, TRUE, FALSE, RINT, RDOUBLE, RSTRING, RBOOL, RCHAR, RVAR, RCONST;
+terminal String PYC, PARA, PARC, LLAVEA, LLAVEC, GUION;
+terminal String PRINTLN, TRUE, FALSE, RINT, RDOUBLE, RSTRING, RBOOL, RCHAR, RVAR, RCONST, RIF, RELSE, RMATCH;
 terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER, DOSP, EQUALP;
 terminal STRING EQUAL, NOT, SMALLER, GREATER, OR, AND, XOR, DIFFERENT, SMALLEREQ, GREATEREQ;
 
 non terminal LinkedList<Instruction> INICIO, INSTRUCCIONES;
-non terminal Instruction INSTRUCCION, EXPRESION, PRINT, DECLARACION, ASIGNACION;
+non terminal LinkedList<Case> CASESLIST;
+non terminal Instruction INSTRUCCION, EXPRESION, PRINT, DECLARACION, ASIGNACION, IF, MATCH;
+non terminal Case CASE, DEFAULT;
 non terminal Type TIPOS;
 non terminal Object MUTABLE;
 
@@ -79,6 +84,8 @@ INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b       {: RESULT = a; RESULT.add(
  INSTRUCCION ::= PRINT:a                              {: RESULT = a; :} 
             | DECLARACION:a                           {: RESULT = a; :}
             | ASIGNACION:a                            {: RESULT = a; :}
+            | IF:a                                    {: RESULT = a; :}
+            | MATCH:a                                 {: RESULT = a; :}
             | error PYC
             | error
 ;
@@ -93,6 +100,26 @@ DECLARACION ::= MUTABLE:a ID:b DOSP TIPOS:c EQUALP EXPRESION:d PYC              
 ASIGNACION ::= ID:a EQUALP EXPRESION:b PYC            {: RESULT = new VarAssignement(a, b, aleft, aright); :}
             | ID:a ADD ADD PYC                        {: RESULT = new VarIncDec(a, true, aleft, aright); :}
             | ID:a SUB SUB PYC                        {: RESULT = new VarIncDec(a, false, aleft, aright); :}
+;
+
+IF ::= RIF PARA EXPRESION:a PARC LLAVEA INSTRUCCIONES:b LLAVEC                                              {: RESULT = new If(a, b, aleft, aright); :}
+            | RIF PARA EXPRESION:a PARC LLAVEA INSTRUCCIONES:b LLAVEC RELSE LLAVEA INSTRUCCIONES:c LLAVEC   {: RESULT = new If(a, b, c, aleft, aright); :}
+            | RIF PARA EXPRESION:a PARC LLAVEA INSTRUCCIONES:b LLAVEC RELSE IF:c                            {: LinkedList<Instruction> tmp = new LinkedList<>(); tmp.add(c); RESULT = new If(a, b, tmp, aleft, aright); :}
+;
+
+MATCH ::= RMATCH EXPRESION:a LLAVEA CASESLIST:b DEFAULT:c LLAVEC                {: RESULT = new Match(a, b, c, aleft, aright); :}
+            | RMATCH EXPRESION:a LLAVEA CASESLIST:b LLAVEC                      {: RESULT = new Match(a, b, null, aleft, aright); :}
+            | RMATCH EXPRESION:a LLAVEA DEFAULT:b LLAVEC                        {: RESULT = new Match(a, new LinkedList<Case>(), b, aleft, aright); :}
+;
+
+CASESLIST ::= CASESLIST:a CASE:b                      {: RESULT = a; RESULT.add(b); :}
+            | CASE:a                                  {: RESULT = new LinkedList<>(); RESULT.add(a); :}
+;
+
+CASE ::= EXPRESION:a EQUALP GREATER LLAVEA INSTRUCCIONES:b LLAVEC               {: RESULT = new Case(a, b, aleft, aright); :}
+;
+
+DEFAULT ::= GUION EQUALP GREATER LLAVEA INSTRUCCIONES:a LLAVEC                  {: RESULT = new Case(null, a, aleft, aright); :}
 ;
 
 MUTABLE ::= RVAR                                      {: RESULT = true; :}

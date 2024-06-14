@@ -17,7 +17,7 @@ import Exceptions.Errores;
 //%debug
 
 COMUL  = ("//".*\r\n)|("//".*\n)|("//".*\r)
-COMML  = "<!""!"*([^!>]|[^!]">"|"!"[^>])*"!"*"!>"
+COMML  = "/*""*"*([^/*//]|[^/*]"/"|"*"[^//])*"*"*"*/"
 BLANCO = [ \r\t\f\n]+
 DIGITO = [0-9]+
 DOUBLE = [0-9]+"."[0-9]+
@@ -46,6 +46,9 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> "string"                                    {return new Symbol(sym.RSTRING, yyline, yycolumn, yytext());}
 <YYINITIAL> "var"                                       {return new Symbol(sym.RVAR, yyline, yycolumn, yytext());}
 <YYINITIAL> "const"                                     {return new Symbol(sym.RCONST, yyline, yycolumn, yytext());}
+<YYINITIAL> "if"                                        {return new Symbol(sym.RIF, yyline, yycolumn, yytext());}
+<YYINITIAL> "else"                                      {return new Symbol(sym.RELSE, yyline, yycolumn, yytext());}
+<YYINITIAL> "match"                                     {return new Symbol(sym.RMATCH, yyline, yycolumn, yytext());}
 
 <YYINITIAL> ";"                                         {return new Symbol(sym.PYC, yyline, yycolumn, yytext());}
 <YYINITIAL> "("                                         {return new Symbol(sym.PARA, yyline, yycolumn, yytext());}
@@ -67,6 +70,9 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> "^"                                         {return new Symbol(sym.XOR, yyline, yycolumn, yytext());}
 <YYINITIAL> ":"                                         {return new Symbol(sym.DOSP, yyline, yycolumn, yytext());}
 <YYINITIAL> "="                                         {return new Symbol(sym.EQUALP, yyline, yycolumn, yytext());}
+<YYINITIAL> "_"                                         {return new Symbol(sym.GUION, yyline, yycolumn, yytext());}
+<YYINITIAL> "{"                                         {return new Symbol(sym.LLAVEA, yyline, yycolumn, yytext());}
+<YYINITIAL> "}"                                         {return new Symbol(sym.LLAVEC, yyline, yycolumn, yytext());}
 
 <YYINITIAL> {DIGITO}                                    {return new Symbol(sym.DIGITO, yyline, yycolumn, yytext());}
 <YYINITIAL> {DOUBLE}                                    {return new Symbol(sym.DOUBLE, yyline, yycolumn, yytext());}

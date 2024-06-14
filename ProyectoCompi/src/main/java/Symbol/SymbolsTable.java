@@ -60,14 +60,17 @@ public class SymbolsTable {
         }
         return false;
     }
-    
-    public Symbol getVariable(String id){
-        Symbol match = (Symbol) this.table.get(id.toLowerCase());
-        
-        if(match != null){
-            return match;
+
+    public Symbol getVariable(String id) {
+        for (SymbolsTable i = this; i != null; i = i.getPreviousTable()) {
+            Symbol match = (Symbol) i.getTable().get(id.toLowerCase());
+
+            if (match != null) {
+                return match;
+            }
         }
         return null;
+
     }
 
 }
