@@ -1,0 +1,91 @@
+No terminales con mayusculas
+Terminales con minusculas
+
+<INICIO> ::= <INSTRUCCIONES>
+
+<INSTRUCCIONES> ::= <INSTRUCCIONES> <INSTRUCCION>
+                | <INSTRUCCION>
+
+<INSTRUCCION>   ::= <PRINT>
+                | <DECLARACION>
+                | <ASIGNACION> <;>
+                | <IF>
+                | <MATCH>
+                | <WHILE>
+                | <DO-WHILE>
+                | <FOR>
+                | <BREAK>
+                | <CONTINUE>
+                | <error> <;>
+
+<PRINT>         ::= <println> <(> <EXPRESSION> <)> <;>
+
+<DECLARACION>   ::= <MUTABLE> <id> <:> <TIPOS> < = > <EXPRESSION> <;>
+                | <MUTABLE> <id> <:> <TIPOS> <;>
+
+<ASIGNACION>    ::= <id> < = > <EXPRESSION>
+                | <id> <+> <+>
+                | <id> < - > < - >
+
+<IF>            ::= <if> <(> <EXPRESSION> <)> <{> <INSTRUCCIONES> <}> <else> <IF>
+                | <if> <(> <EXPRESSION> <)> <{> <INSTRUCCIONES> <}> <else> <{> <INSTRUCCIONES> <}>
+                | <if> <(> <EXPRESSION> <)> <{> <INSTRUCCIONES> <}>
+
+<MATCH>         ::= <match> <EXPRESSION> <{> <CASESLIST> <DEFAULT> <}>
+                | <match> <EXPRESSION> <{> <CASESLIST> <}>
+                | <match> <EXPRESSION> <{> <DEFAULT> <}>
+
+<WHILE>         ::= <while> <(> <EXPRESSION> <)> <{> <INSTRUCCIONES> <}>
+
+<DO-WHILE>      ::= <do> <{> <INSTRUCCIONES> <}> <while> <(> <EXPRESSION> <)> <;>
+
+<FOR>           ::= <for> <(> <ASIGNACION> <;> <EXPRESSION> <;> <ASIGNACION> <)> <{> <INSTRUCCIONES> <}>
+
+<BREAK>         ::= <break> <;>
+
+<CONTINUE>      ::= <continue> <;>
+
+<MUTABLE>       ::= <var>
+                | <const>
+
+<TIPOS>         ::= <int>
+                | <double>
+                | <string>
+                | <char>
+                | <bool>
+
+<CASESLIST>     ::= <CASESLIST> <CASE>
+                | <CASE>
+
+<CASE>          ::= <EXPRESSION> < = > < > > <{> <INSTRUCCIONES> <}>
+
+<DEFAULT>       ::= <_> < = > < > > <{> <INSTRUCCIONES> <}>
+
+<EXPRESSION>    ::= < - > <EXPRESSION>
+                | <EXPRESSION> <*> <*> <EXPRESSION>
+                | <EXPRESSION> <%> <EXPRESSION>
+                | <EXPRESSION> </> <EXPRESSION>
+                | <EXPRESSION> <*> <EXPRESSION>
+                | <EXPRESSION> < - > <EXPRESSION>
+                | <EXPRESSION> <+> <EXPRESSION>
+                | <EXPRESSION> < == > <EXPRESSION>
+                | <EXPRESSION> < != > <EXPRESSION>
+                | <EXPRESSION> < < > <EXPRESSION>
+                | <EXPRESSION> < <= > <EXPRESSION>
+                | <EXPRESSION> < > > <EXPRESSION>
+                | <EXPRESSION> < >= > <EXPRESSION>
+                | <!> <EXPRESSION>
+                | <EXPRESSION> <^> <EXPRESSION>
+                | <EXPRESSION> <&&> <EXPRESSION>
+                | <EXPRESSION> <||> <EXPRESSION>
+                | <(> <int> <)> <EXPRESSION>
+                | <(> <double> <)> <EXPRESSION>
+                | <(> <char> <)> <EXPRESSION>
+                | <digito>
+                | <double>
+                | <cadena>
+                | <char>
+                | <true>
+                | <false>
+                | <id>
+                | <(> <EXPRESSION> <)>
