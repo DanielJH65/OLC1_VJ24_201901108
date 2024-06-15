@@ -38,26 +38,42 @@ public class Match extends Instruction {
         }
 
         var newTable = new SymbolsTable(table);
+
         for (var case1 : this.cases) {
             var exp = case1.getExpression(tree, table);
             if (exp instanceof Errores) {
                 return exp;
             }
-            if(this.condition.getType().getType() != case1.getTypeExpression()){
+            if (this.condition.getType().getType() != case1.getTypeExpression()) {
                 return new Errores("Semantico", "La expresion no es valida", case1.getLine(), case1.getCol());
             }
-            if(exp == cond){
-                case1.interpretar(tree, newTable);
-                return null;
+            if (this.condition.getType().getType() == TipoDato.STRING) {
+                if (exp.equals(cond)) {
+                    var result = case1.interpretar(tree, newTable);
+                    if (result instanceof Errores) {
+                        tree.getErrores().add((Errores) result);
+                    }
+                }
+            } else {
+                if (exp == cond) {
+                    var result = case1.interpretar(tree, newTable);
+                    if (result instanceof Errores) {
+                        tree.getErrores().add((Errores) result);
+                    }
+                }
             }
         }
-        if(this.def != null){
-            this.def.interpretar(tree, newTable);
+        if (this.def != null) {
+            var result = this.def.interpretar(tree, newTable);
+            if (result instanceof Errores) {
+                tree.getErrores().add((Errores) result);
+            }
         }
         LinkedList<Simbolo> newList = newTable.getSimbolos();
-        for(var sym : newList){
-            sym.setScope("While " + this.getLine());
+        for (var sym : newList) {
+            sym.setScope("Match " + this.getLine());
         }
+        table.getSymbols().addAll(newTable.getSymbols());
         if (newList != null) {
             table.getSymbols().addAll(newList);
         }

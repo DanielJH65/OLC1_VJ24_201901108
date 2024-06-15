@@ -410,8 +410,8 @@ public class Arithmetics extends Instruction {
             case INTEGER -> {
                 switch (type2) {
                     case INTEGER -> {
-                        this.getType().setType(TipoDato.DOUBLE);
-                        return Math.pow((int) op1, (int) op2);
+                        this.getType().setType(TipoDato.INTEGER);
+                        return (int) Math.pow((int) op1, (int) op2);
                     }
                     case DOUBLE -> {
                         this.getType().setType(TipoDato.DOUBLE);
@@ -452,11 +452,11 @@ public class Arithmetics extends Instruction {
                 switch (type2) {
                     case INTEGER -> {
                         this.getType().setType(TipoDato.DOUBLE);
-                        return (int) op1 % (int) op2;
+                        return (double) ((int) op1 % (int) op2);
                     }
                     case DOUBLE -> {
                         this.getType().setType(TipoDato.DOUBLE);
-                        return (int) op1 % (Double) op2;
+                        return (double) ((int) op1 % (Double) op2);
                     }
                     default -> {
                         return new Errores("Semantico", "Módulo entre tipos no valida", this.getLine(), this.getCol());
@@ -467,11 +467,11 @@ public class Arithmetics extends Instruction {
                 switch (type2) {
                     case INTEGER -> {
                         this.getType().setType(TipoDato.DOUBLE);
-                        return (Double) op1 % (int) op2;
+                        return (double) ((Double) op1 % (int) op2);
                     }
                     case DOUBLE -> {
                         this.getType().setType(TipoDato.DOUBLE);
-                        return (Double) op1 % (Double) op2;
+                        return (double) ((Double) op1 % (Double) op2);
                     }
                     default -> {
                         return new Errores("Semantico", "Módulo entre tipos no valida", this.getLine(), this.getCol());

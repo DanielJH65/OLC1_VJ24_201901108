@@ -43,7 +43,7 @@ public class Case extends Instruction {
                 tree.getErrores().add((Errores) result);
             }
         }
-        return true;
+        return null;
     }
 
 }

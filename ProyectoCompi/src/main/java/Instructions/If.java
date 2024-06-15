@@ -48,31 +48,56 @@ public class If extends Instruction {
         }
 
         var newTable = new SymbolsTable(table);
+
+        Break break1 = new Break(0, 0);
+        Continue continue1 = new Continue(0, 0);
+        boolean isBreak = false;
+        boolean isContinue = false;
         if (Boolean.parseBoolean(exp.toString())) {
             for (var ins : this.instructions) {
-                if (ins instanceof Break || ins instanceof Continue) {
-                    return ins;
+                if (ins instanceof Break) {
+                    break1 = (Break) ins;
+                    isBreak = true;
+                }
+                if (ins instanceof Continue) {
+                    continue1 = (Continue) ins;
+                    isContinue = true;
                 }
                 var result = ins.interpretar(tree, newTable);
                 if (result instanceof Errores) {
                     tree.getErrores().add((Errores) result);
                 }
-                if (result instanceof Break || ins instanceof Continue) {
-                    return ins;
+                if (result instanceof Break) {
+                    break1 = (Break) result;
+                    isBreak = true;
+                }
+                if (result instanceof Continue) {
+                    continue1 = (Continue) result;
+                    isContinue = true;
                 }
             }
         } else {
             if (this.instructionsElse != null) {
                 for (var ins : this.instructionsElse) {
-                    if (ins instanceof Break || ins instanceof Continue) {
-                        return ins;
+                    if (ins instanceof Break) {
+                        break1 = (Break) ins;
+                        isBreak = true;
+                    }
+                    if (ins instanceof Continue) {
+                        continue1 = (Continue) ins;
+                        isContinue = true;
                     }
                     var result = ins.interpretar(tree, newTable);
                     if (result instanceof Errores) {
                         tree.getErrores().add((Errores) result);
                     }
-                    if (result instanceof Break || ins instanceof Continue) {
-                        return ins;
+                    if (result instanceof Break) {
+                        break1 = (Break) result;
+                        isBreak = true;
+                    }
+                    if (result instanceof Continue) {
+                        continue1 = (Continue) result;
+                        isContinue = true;
                     }
                 }
             }
@@ -81,8 +106,15 @@ public class If extends Instruction {
         for (var sym : newList) {
             sym.setScope("If " + this.getLine());
         }
+        table.getSymbols().addAll(newTable.getSymbols());
         if (newList != null) {
             table.getSymbols().addAll(newList);
+        }
+        if (isBreak) {
+            return break1;
+        }
+        if (isContinue) {
+            return continue1;
         }
         return null;
     }

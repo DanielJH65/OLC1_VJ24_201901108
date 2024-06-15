@@ -58,8 +58,8 @@ terminal char CHAR;
 terminal String PYC, PARA, PARC, LLAVEA, LLAVEC, GUION;
 terminal String PRINTLN, TRUE, FALSE, RINT, RDOUBLE, RSTRING, RBOOL, RCHAR, RVAR, RCONST, RIF, RELSE, RMATCH;
 terminal String RWHILE, RDO, RFOR, RCONTINUE, RBREAK;
-terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER, DOSP, EQUALP;
-terminal STRING EQUAL, NOT, SMALLER, GREATER, OR, AND, XOR, DIFFERENT, SMALLEREQ, GREATEREQ;
+terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER, DOSP, EQUALP, CAST1, CAST2, CAST3;
+terminal String EQUAL, NOT, SMALLER, GREATER, OR, AND, XOR, DIFFERENT, SMALLEREQ, GREATEREQ;
 
 non terminal LinkedList<Instruction> INICIO, INSTRUCCIONES;
 non terminal LinkedList<Case> CASESLIST;
@@ -76,6 +76,9 @@ precedence left EQUAL, DIFFERENT, SMALLER, SMALLEREQ, GREATER, GREATEREQ;
 precedence left ADD, SUB;
 precedence left MULTI, DIV, MODULE;
 precedence left POWER;
+precedence left CAST3;
+precedence left CAST2;
+precedence left CAST1;
 precedence left DENIAL;
 
 start with INICIO;
@@ -112,9 +115,9 @@ ASIGNACION ::= ID:a EQUALP EXPRESION:b                {: RESULT = new VarAssigne
             | ID:a SUB SUB                            {: RESULT = new VarIncDec(a, false, aleft, aright); :}
 ;
 
-IF ::= RIF PARA EXPRESION:a PARC LLAVEA INSTRUCCIONES:b LLAVEC                                              {: RESULT = new If(a, b, aleft, aright); :}
-            | RIF PARA EXPRESION:a PARC LLAVEA INSTRUCCIONES:b LLAVEC RELSE LLAVEA INSTRUCCIONES:c LLAVEC   {: RESULT = new If(a, b, c, aleft, aright); :}
+IF ::= RIF PARA EXPRESION:a PARC LLAVEA INSTRUCCIONES:b LLAVEC RELSE LLAVEA INSTRUCCIONES:c LLAVEC          {: RESULT = new If(a, b, c, aleft, aright); :}
             | RIF PARA EXPRESION:a PARC LLAVEA INSTRUCCIONES:b LLAVEC RELSE IF:c                            {: LinkedList<Instruction> tmp = new LinkedList<>(); tmp.add(c); RESULT = new If(a, b, tmp, aleft, aright); :}
+            | RIF PARA EXPRESION:a PARC LLAVEA INSTRUCCIONES:b LLAVEC                                       {: RESULT = new If(a, b, aleft, aright); :}
 ;
 
 MATCH ::= RMATCH EXPRESION:a LLAVEA CASESLIST:b DEFAULT:c LLAVEC                {: RESULT = new Match(a, b, c, aleft, aright); :}
@@ -174,9 +177,9 @@ EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetic
             | EXPRESION:a XOR EXPRESION:b             {: RESULT = new Logic(a, b, LogicOperators.XOR, aleft, aright); :}
             | EXPRESION:a AND EXPRESION:b             {: RESULT = new Logic(a, b, LogicOperators.AND, aleft, aright); :}
             | EXPRESION:a OR EXPRESION:b              {: RESULT = new Logic(a, b, LogicOperators.OR, aleft, aright); :}
-            | PARA RINT PARC EXPRESION:a              {: RESULT = new Cast(a, new Type(TipoDato.INTEGER), aleft, aright); :}
-            | PARA RDOUBLE PARC EXPRESION:a           {: RESULT = new Cast(a, new Type(TipoDato.DOUBLE), aleft, aright); :}
-            | PARA RCHAR PARC EXPRESION:a             {: RESULT = new Cast(a, new Type(TipoDato.CHAR), aleft, aright); :}
+            | PARA RINT PARC EXPRESION:a              {: RESULT = new Cast(a, new Type(TipoDato.INTEGER), aleft, aright); :}%prec CAST1
+            | PARA RDOUBLE PARC EXPRESION:a           {: RESULT = new Cast(a, new Type(TipoDato.DOUBLE), aleft, aright); :}%prec CAST2
+            | PARA RCHAR PARC EXPRESION:a             {: RESULT = new Cast(a, new Type(TipoDato.CHAR), aleft, aright); :}%prec CAST3
             | DIGITO:a                                {: RESULT = new Native(Integer.parseInt(a), new Type(TipoDato.INTEGER), aleft, aright); :}
             | DOUBLE:a                                {: RESULT = new Native(new Double(a), new Type(TipoDato.DOUBLE), aleft, aright); :}
             | CADENA:a                                {: RESULT = new Native(a, new Type(TipoDato.STRING), aleft, aright); :}

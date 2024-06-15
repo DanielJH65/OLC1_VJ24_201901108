@@ -48,10 +48,11 @@ public class For extends Instruction{
             return new Errores("Semantico", "Expresion no valida, debe ser bool", this.condition.getLine(), this.condition.getCol());
         }
         
+        boolean break1 = false;
         while(Boolean.parseBoolean(this.condition.interpretar(tree, table).toString())){
             for (var ins : this.instructions) {
                 if(ins instanceof Break){
-                    return null;
+                    break1 = true;
                 }
                 if(ins instanceof Continue){
                     break;
@@ -61,7 +62,7 @@ public class For extends Instruction{
                     tree.getErrores().add((Errores) result);
                 }
                 if(result instanceof Break){
-                    return null;
+                    break1 = true;
                 }
                 if(result instanceof Continue){
                     break;
@@ -71,11 +72,15 @@ public class For extends Instruction{
             if(inc instanceof Errores){
                 return inc;
             }
+            if(break1){
+                break;
+            }
         }
         LinkedList<Simbolo> newList = newTable.getSimbolos();
         for(var sym : newList){
             sym.setScope("For " + this.getLine());
         }
+        table.getSymbols().addAll(newTable.getSymbols());
         if (newList != null) {
             table.getSymbols().addAll(newList);
         }
