@@ -50,17 +50,29 @@ public class If extends Instruction {
         var newTable = new SymbolsTable(table);
         if (Boolean.parseBoolean(exp.toString())) {
             for (var ins : this.instructions) {
+                if (ins instanceof Break || ins instanceof Continue) {
+                    return ins;
+                }
                 var result = ins.interpretar(tree, newTable);
                 if (result instanceof Errores) {
                     tree.getErrores().add((Errores) result);
+                }
+                if (result instanceof Break || ins instanceof Continue) {
+                    return ins;
                 }
             }
         } else {
             if (this.instructionsElse != null) {
                 for (var ins : this.instructionsElse) {
+                    if (ins instanceof Break || ins instanceof Continue) {
+                        return ins;
+                    }
                     var result = ins.interpretar(tree, newTable);
                     if (result instanceof Errores) {
                         tree.getErrores().add((Errores) result);
+                    }
+                    if (result instanceof Break || ins instanceof Continue) {
+                        return ins;
                     }
                 }
             }

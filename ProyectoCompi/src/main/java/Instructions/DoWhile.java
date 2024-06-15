@@ -42,9 +42,21 @@ public class DoWhile extends Instruction {
 
         do {
             for (var ins : this.instructions) {
+                if(ins instanceof Break){
+                    return null;
+                }
+                if(ins instanceof Continue){
+                    break;
+                }
                 var result = ins.interpretar(tree, newTable);
                 if (result instanceof Errores) {
                     tree.getErrores().add((Errores) result);
+                }
+                if(result instanceof Break){
+                    return null;
+                }
+                if(result instanceof Continue){
+                    break;
                 }
             }
         } while (Boolean.parseBoolean(this.condition.interpretar(tree, table).toString()));

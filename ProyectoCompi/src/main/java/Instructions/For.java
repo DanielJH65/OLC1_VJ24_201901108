@@ -17,30 +17,38 @@ import java.util.LinkedList;
  *
  * @author daniel
  */
-public class While extends Instruction {
-
+public class For extends Instruction{
+    private Instruction assignement;
     private Instruction condition;
+    private Instruction increment;
     private LinkedList<Instruction> instructions;
 
-    public While(Instruction condition, LinkedList<Instruction> instructions, int line, int col) {
+    public For(Instruction assignement, Instruction condition, Instruction increment, LinkedList<Instruction> instructions, int line, int col) {
         super(new Type(TipoDato.VOID), line, col);
+        this.assignement = assignement;
         this.condition = condition;
+        this.increment = increment;
         this.instructions = instructions;
     }
 
     @Override
     public Object interpretar(Tree tree, SymbolsTable table) {
-        var exp = this.condition.interpretar(tree, table);
-        if (exp instanceof Errores) {
-            return exp;
-        }
-        if (this.condition.getType().getType() != TipoDato.BOOLEAN) {
-            return new Errores("Semantico", "La expresion no es valida", this.getLine(), this.getCol());
-        }
-
         var newTable = new SymbolsTable(table);
-
-        while (Boolean.parseBoolean(this.condition.interpretar(tree, table).toString())) {
+        
+        var res1 = this.assignement.interpretar(tree, table);
+        if(res1 instanceof Errores){
+            return res1;
+        }
+        
+        var cond = this.condition.interpretar(tree, table);
+        if(cond instanceof Errores){
+            return cond;
+        }
+        if(this.condition.getType().getType() != TipoDato.BOOLEAN){
+            return new Errores("Semantico", "Expresion no valida, debe ser bool", this.condition.getLine(), this.condition.getCol());
+        }
+        
+        while(Boolean.parseBoolean(this.condition.interpretar(tree, table).toString())){
             for (var ins : this.instructions) {
                 if(ins instanceof Break){
                     return null;
@@ -59,15 +67,20 @@ public class While extends Instruction {
                     break;
                 }
             }
+            var inc = this.increment.interpretar(tree, table);
+            if(inc instanceof Errores){
+                return inc;
+            }
         }
         LinkedList<Simbolo> newList = newTable.getSimbolos();
         for(var sym : newList){
-            sym.setScope("While " + this.getLine());
+            sym.setScope("For " + this.getLine());
         }
         if (newList != null) {
             table.getSymbols().addAll(newList);
         }
         return null;
     }
-
+    
+    
 }

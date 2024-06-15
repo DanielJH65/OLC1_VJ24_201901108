@@ -328,6 +328,7 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
             errores.addAll(lex.errores);
             errores.addAll(par.errores);
             errores.addAll(ast.getErrores());
+            erroresConsola(errores);
         } catch (Exception ex) {
             System.err.println("Ocurrio un error: " + ex.getMessage());
         }
@@ -352,6 +353,16 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
         reporteErrores(errores);
     }//GEN-LAST:event_btnRErroresActionPerformed
 
+    private void erroresConsola(LinkedList<Errores> errores){
+        String output = "";
+        
+        for(Errores err : errores){
+            output += "\n--> Error " + err.getType() + ": " + err.getDescription() + " en linea " + err.getLine() + " y columna " + err.getColumn();
+        }
+        
+        txtConsola.setText(txtConsola.getText()+output);
+    }
+    
     private void reporteErrores(LinkedList<Errores> errores) {
         String salida;
         salida = "<!DOCTYPE html>\n" + "<html lang=\"es\">\n" + "<head>\n" + "    <meta charset=\"UTF-8\">\n" + "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n" + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" + "    <link href=\"https://bootswatch.com/4/superhero/bootstrap.min.css\" rel=\"stylesheet\" type=\"text/css\">\n" + "    <title>Reporte de Errores</title>\n" + "</head>\n" + "<body style=\"background: linear-gradient(to right, #141e30, #243b55);\">\n" + "    <nav class=\"navbar navbar-expand-lg navbar-dark bg-secondary\">\n" + "        <a class=\"navbar-brand\" href=\"#\">Proyecto 1 - Organizaci\u00f3n de Lenguajes y Compiladores 1</a>\n" + "        <a class=\"navbar-brand\" href=\"#\">Walter Daniel Jimenez Hernandez 201901108</a>\n" + "    </nav>\n";
