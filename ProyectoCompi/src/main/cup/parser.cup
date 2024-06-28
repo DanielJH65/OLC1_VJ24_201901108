@@ -2,6 +2,7 @@ package Analizador;
 
 import java_cup.runtime.Symbol;
 import java.util.LinkedList;
+import java.util.HashMap;
 
 import Abstract.Instruction;
 import Symbol.Type;
@@ -19,6 +20,9 @@ import Instructions.DoWhile;
 import Instructions.For;
 import Instructions.Break;
 import Instructions.Continue;
+import Instructions.Function;
+import Instructions.StartWith;
+import Instructions.CallFunction;
 
 import Expressions.Native;
 import Expressions.Arithmetics;
@@ -55,15 +59,17 @@ action code
 
 terminal String DIGITO, DOUBLE, CADENA, ID;
 terminal char CHAR;
-terminal String PYC, PARA, PARC, LLAVEA, LLAVEC, GUION;
+terminal String PYC, PARA, PARC, LLAVEA, LLAVEC, GUION, COMA;
 terminal String PRINTLN, TRUE, FALSE, RINT, RDOUBLE, RSTRING, RBOOL, RCHAR, RVAR, RCONST, RIF, RELSE, RMATCH;
-terminal String RWHILE, RDO, RFOR, RCONTINUE, RBREAK;
+terminal String RWHILE, RDO, RFOR, RCONTINUE, RBREAK, RSTART, RVOID, RRETURN;
 terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER, DOSP, EQUALP, CAST1, CAST2, CAST3;
 terminal String EQUAL, NOT, SMALLER, GREATER, OR, AND, XOR, DIFFERENT, SMALLEREQ, GREATEREQ;
 
-non terminal LinkedList<Instruction> INICIO, INSTRUCCIONES;
+non terminal LinkedList<Instruction> INICIO, INSTRUCCIONES, PARAMSCALL;
 non terminal LinkedList<Case> CASESLIST;
-non terminal Instruction INSTRUCCION, EXPRESION, PRINT, DECLARACION, ASIGNACION, IF, MATCH, WHILE, DOWHILE, FOR, BREAK, CONTINUE;
+non terminal LinkedList<HashMap> PARAMSLIST;
+non terminal Instruction INSTRUCCION, EXPRESION, PRINT, DECLARACION, ASIGNACION;
+non terminal Instruction IF, MATCH, WHILE, DOWHILE, FOR, BREAK, CONTINUE, START, FUNCTION, CALLFUNCTION, RETURN;
 non terminal Case CASE, DEFAULT;
 non terminal Type TIPOS;
 non terminal Object MUTABLE;
@@ -100,6 +106,9 @@ INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b       {: RESULT = a; RESULT.add(
             | FOR:a                                   {: RESULT = a; :}
             | BREAK:a                                 {: RESULT = a; :}
             | CONTINUE:a                              {: RESULT = a; :}
+            | FUNCTION:a                              {: RESULT = a; :}
+            | START:a                                 {: RESULT = a; :}
+            | CALLFUNCTION:a                          {: RESULT = a; :}
             | error PYC
 ;
 
@@ -150,6 +159,28 @@ BREAK ::= RBREAK:a PYC                                {: RESULT = new Break(alef
 CONTINUE ::= RCONTINUE:a PYC                          {: RESULT = new Continue(aleft, aright); :}
 ;
 
+FUNCTION ::= TIPOS:a ID:b PARA PARC LLAVEA INSTRUCCIONES:c LLAVEC               {: RESULT = new Function(b, new LinkedList<HashMap>(), c, a, aleft, aright); :}
+            | TIPOS:a ID:b PARA PARAMSLIST:c PARC LLAVEA INSTRUCCIONES:d LLAVEC {: RESULT = new Function(b, c, d, a, aleft, aright);  :}
+;
+
+PARAMSLIST ::= PARAMSLIST:a COMA TIPOS:b ID:c         {: RESULT = a; var map2 = new HashMap<String, Object>(); 
+                                                         map2.put("id",c); map2.put("type", b); RESULT.add(map2); :}
+            | TIPOS:a ID:b                            {: RESULT = new LinkedList<HashMap>(); var map = new HashMap<String, Object>(); 
+                                                         map.put("id",b); map.put("type", a); RESULT.add(map); :}
+;
+
+START ::= RSTART ID:a PARA PARC PYC                   {: RESULT = new StartWith(a, new LinkedList<Instruction>(), aleft, aright); :}
+            | RSTART ID:a PARA PARAMSCALL:b PARC PYC  {: RESULT = new StartWith(a, b, aleft, aright); :}
+;
+
+PARAMSCALL ::= PARAMSCALL:a COMA EXPRESION:b          {: RESULT = a; a.add(b); :}
+            | EXPRESION:a                             {: RESULT = new LinkedList<Instruction>(); RESULT.add(a); :}
+;
+
+CALLFUNCTION ::= ID:a PARA PARC PYC                   {: RESULT = new CallFunction(a, new LinkedList<Instruction>(), aleft, aright); :}
+            | ID:a PARA PARAMSCALL:b PARC PYC         {: RESULT = new CallFunction(a, b, aleft, aright); :}
+;
+
 MUTABLE ::= RVAR                                      {: RESULT = true; :}
             | RCONST                                  {: RESULT = false; :}
 ;
@@ -158,6 +189,7 @@ TIPOS ::=   RINT                                      {: RESULT = new Type(TipoD
             | RSTRING                                 {: RESULT = new Type(TipoDato.STRING); :}
             | RCHAR                                   {: RESULT = new Type(TipoDato.CHAR); :}
             | RBOOL                                   {: RESULT = new Type(TipoDato.BOOLEAN); :}
+            | RVOID                                   {: RESULT = new Type(TipoDato.VOID); :}
 ;
 
 EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetics(null, a, ArithmeticOperators.DENIAL, aleft, aright); :} %prec DENIAL
@@ -188,4 +220,5 @@ EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetic
             | FALSE:a                                 {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
             | ID:a                                    {: RESULT = new VarAcces(a, aleft, aright); :}
             | PARA EXPRESION:a PARC                   {: RESULT = a; :}
+            | CALLFUNCTION:a                          {: RESULT = a; :}
 ;

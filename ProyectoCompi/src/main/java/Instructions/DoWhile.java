@@ -38,41 +38,40 @@ public class DoWhile extends Instruction {
             return new Errores("Semantico", "La expresion no es valida", this.getLine(), this.getCol());
         }
 
-        var newTable = new SymbolsTable(table);
-
         boolean break1 = false;
         do {
+            var newTable = new SymbolsTable(table);
             for (var ins : this.instructions) {
-                if(ins instanceof Break){
+                if (ins instanceof Break) {
                     break1 = true;
                 }
-                if(ins instanceof Continue){
+                if (ins instanceof Continue) {
                     break;
                 }
                 var result = ins.interpretar(tree, newTable);
                 if (result instanceof Errores) {
                     tree.getErrores().add((Errores) result);
                 }
-                if(result instanceof Break){
+                if (result instanceof Break) {
                     break1 = true;
                 }
-                if(result instanceof Continue){
+                if (result instanceof Continue) {
                     break;
                 }
             }
-            if(break1){
+            if (break1) {
                 break;
+            }
+            LinkedList<Simbolo> newList = newTable.getSimbolos();
+            for (var sym : newList) {
+                sym.setScope("Do-While " + this.getLine());
+            }
+            table.getSymbols().addAll(newTable.getSymbols());
+            if (newList != null) {
+                table.getSymbols().addAll(newList);
             }
         } while (Boolean.parseBoolean(this.condition.interpretar(tree, table).toString()));
 
-        LinkedList<Simbolo> newList = newTable.getSimbolos();
-        for (var sym : newList) {
-            sym.setScope("Do-While " + this.getLine());
-        }
-        table.getSymbols().addAll(newTable.getSymbols());
-        if (newList != null) {
-            table.getSymbols().addAll(newList);
-        }
         return null;
     }
 

@@ -8,6 +8,11 @@ import Abstract.Instruction;
 import Analizador.lexico;
 import Analizador.parser;
 import Exceptions.Errores;
+import Instructions.Function;
+import Instructions.StartWith;
+import Instructions.Statement;
+import Instructions.VarAssignement;
+import Instructions.VarIncDec;
 import Reportes.Simbolo;
 import Symbol.SymbolsTable;
 import Symbol.Tree;
@@ -313,15 +318,42 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
             var table = new SymbolsTable();
             table.setName("Global");
             ast.setConsole("");
+            ast.setGlobalTable(table);
             for (var ins : ast.getInstructions()) {
                 if (ins == null) {
                     continue;
                 }
-                var res = ins.interpretar(ast, table);
-                if (res instanceof Errores) {
-                    ast.getErrores().add((Errores) res);
+                if (ins instanceof Function) {
+                    ast.addFunctions(ins);
                 }
             }
+            for (var ins : ast.getInstructions()) {
+                if (ins == null) {
+                    continue;
+                }
+                if (ins instanceof Statement || ins instanceof VarAssignement || ins instanceof VarIncDec) {
+                    var res = ins.interpretar(ast, table);
+                    if (res instanceof Errores) {
+                        ast.getErrores().add((Errores) res);
+                    }
+                }
+            }
+            StartWith start = null;
+            for (var ins : ast.getInstructions()) {
+                if (ins == null) {
+                    continue;
+                }
+                if (ins instanceof StartWith) {
+                    start = (StartWith) ins;
+                    break;
+                }
+            }
+            
+            var resultStart = start.interpretar(ast, table);
+            if (resultStart instanceof Errores){
+                ast.getErrores().add((Errores) resultStart);
+            }
+                    
             txtConsola.setText(ast.getConsole());
             table.getSymbols().addAll(table.getSimbolos());
             symbols.addAll(table.getSymbols());
@@ -353,16 +385,16 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
         reporteErrores(errores);
     }//GEN-LAST:event_btnRErroresActionPerformed
 
-    private void erroresConsola(LinkedList<Errores> errores){
+    private void erroresConsola(LinkedList<Errores> errores) {
         String output = "";
-        
-        for(Errores err : errores){
+
+        for (Errores err : errores) {
             output += "\n--> Error " + err.getType() + ": " + err.getDescription() + " en linea " + err.getLine() + " y columna " + err.getColumn();
         }
-        
-        txtConsola.setText(txtConsola.getText()+output);
+
+        txtConsola.setText(txtConsola.getText() + output);
     }
-    
+
     private void reporteErrores(LinkedList<Errores> errores) {
         String salida;
         salida = "<!DOCTYPE html>\n" + "<html lang=\"es\">\n" + "<shead>\n" + "    <meta charset=\"UTF-8\">\n" + "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n" + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" + "    <link href=\"https://bootswatch.com/4/superhero/bootstrap.min.css\" rel=\"stylesheet\" type=\"text/css\">\n" + "    <title>Reporte de Errores</title>\n" + "</head>\n" + "<body style=\"background: linear-gradient(to right, #141e30, #243b55);\">\n" + "    <nav class=\"navbar navbar-expand-lg navbar-dark bg-secondary\">\n" + "        <a class=\"navbar-brand\" href=\"#\">Proyecto 1 - Organizaci\u00f3n de Lenguajes y Compiladores 1</a>\n" + "        <a class=\"navbar-brand\" href=\"#\">Walter Daniel Jimenez Hernandez 201901108</a>\n" + "    </nav>\n";
@@ -402,15 +434,15 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error al crear el archivo", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     private void reporteSimbolos(LinkedList<Simbolo> symbols) {
         String salida;
-        salida = "<!DOCTYPE html>\n" + "<html lang=\"es\">\n" + "<head>\n" + "    <meta charset=\"UTF-8\">\n" +"    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n" 
-                + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" 
-                + "    <link href=\"https://bootswatch.com/4/superhero/bootstrap.min.css\" rel=\"stylesheet\" type=\"text/css\">\n" 
-                + "    <title>Reporte de Simbolos</title>\n" + "</head>\n" + "<body style=\"background: linear-gradient(to right, #141e30, #243b55);\">\n" 
-                + "    <nav class=\"navbar navbar-expand-lg navbar-dark bg-secondary\">\n" 
-                + "        <a class=\"navbar-brand\" href=\"#\">Proyecto 1 - Organizaci\u00f3n de Lenguajes y Compiladores 1</a>\n" 
+        salida = "<!DOCTYPE html>\n" + "<html lang=\"es\">\n" + "<head>\n" + "    <meta charset=\"UTF-8\">\n" + "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n"
+                + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+                + "    <link href=\"https://bootswatch.com/4/superhero/bootstrap.min.css\" rel=\"stylesheet\" type=\"text/css\">\n"
+                + "    <title>Reporte de Simbolos</title>\n" + "</head>\n" + "<body style=\"background: linear-gradient(to right, #141e30, #243b55);\">\n"
+                + "    <nav class=\"navbar navbar-expand-lg navbar-dark bg-secondary\">\n"
+                + "        <a class=\"navbar-brand\" href=\"#\">Proyecto 1 - Organizaci\u00f3n de Lenguajes y Compiladores 1</a>\n"
                 + "        <a class=\"navbar-brand\" href=\"#\">Walter Daniel Jimenez Hernandez 201901108</a>\n" + "    </nav>\n";
         salida += "<div class=\"jumbotron my-4 mx-4\">\n";
         salida += "<br><center><h3>Listado de Simbolos</h3></center><br>\n";

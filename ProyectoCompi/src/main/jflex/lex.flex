@@ -44,6 +44,7 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> "bool"                                      {return new Symbol(sym.RBOOL, yyline, yycolumn, yytext());}
 <YYINITIAL> "char"                                      {return new Symbol(sym.RCHAR, yyline, yycolumn, yytext());}
 <YYINITIAL> "string"                                    {return new Symbol(sym.RSTRING, yyline, yycolumn, yytext());}
+<YYINITIAL> "void"                                      {return new Symbol(sym.RVOID, yyline, yycolumn, yytext());}
 <YYINITIAL> "var"                                       {return new Symbol(sym.RVAR, yyline, yycolumn, yytext());}
 <YYINITIAL> "const"                                     {return new Symbol(sym.RCONST, yyline, yycolumn, yytext());}
 <YYINITIAL> "if"                                        {return new Symbol(sym.RIF, yyline, yycolumn, yytext());}
@@ -54,6 +55,8 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> "for"                                       {return new Symbol(sym.RFOR, yyline, yycolumn, yytext());}
 <YYINITIAL> "continue"                                  {return new Symbol(sym.RCONTINUE, yyline, yycolumn, yytext());}
 <YYINITIAL> "break"                                     {return new Symbol(sym.RBREAK, yyline, yycolumn, yytext());}
+<YYINITIAL> "start_with"                                {return new Symbol(sym.RSTART, yyline, yycolumn, yytext());}
+<YYINITIAL> "return"                                    {return new Symbol(sym.RRETURN, yyline, yycolumn, yytext());}
 
 <YYINITIAL> ";"                                         {return new Symbol(sym.PYC, yyline, yycolumn, yytext());}
 <YYINITIAL> "("                                         {return new Symbol(sym.PARA, yyline, yycolumn, yytext());}
@@ -78,6 +81,7 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> "_"                                         {return new Symbol(sym.GUION, yyline, yycolumn, yytext());}
 <YYINITIAL> "{"                                         {return new Symbol(sym.LLAVEA, yyline, yycolumn, yytext());}
 <YYINITIAL> "}"                                         {return new Symbol(sym.LLAVEC, yyline, yycolumn, yytext());}
+<YYINITIAL> ","                                         {return new Symbol(sym.COMA, yyline, yycolumn, yytext());}
 
 <YYINITIAL> {DIGITO}                                    {return new Symbol(sym.DIGITO, yyline, yycolumn, yytext());}
 <YYINITIAL> {DOUBLE}                                    {return new Symbol(sym.DOUBLE, yyline, yycolumn, yytext());}

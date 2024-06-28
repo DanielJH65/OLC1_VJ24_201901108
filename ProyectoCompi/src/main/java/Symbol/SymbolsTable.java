@@ -20,6 +20,7 @@ public class SymbolsTable {
     private HashMap<String, Object> table;
     private String name;
     private LinkedList<Simbolo> symbols;
+    
 
     public SymbolsTable() {
         this.table = new HashMap<>();

@@ -39,6 +39,8 @@ public class Match extends Instruction {
 
         var newTable = new SymbolsTable(table);
 
+        boolean isCase = false;
+
         for (var case1 : this.cases) {
             var exp = case1.getExpression(tree, table);
             if (exp instanceof Errores) {
@@ -53,6 +55,8 @@ public class Match extends Instruction {
                     if (result instanceof Errores) {
                         tree.getErrores().add((Errores) result);
                     }
+                    isCase = true;
+                    break;
                 }
             } else {
                 if (exp == cond) {
@@ -60,10 +64,12 @@ public class Match extends Instruction {
                     if (result instanceof Errores) {
                         tree.getErrores().add((Errores) result);
                     }
+                    isCase = true;
+                    break;
                 }
             }
         }
-        if (this.def != null) {
+        if (this.def != null && !isCase) {
             var result = this.def.interpretar(tree, newTable);
             if (result instanceof Errores) {
                 tree.getErrores().add((Errores) result);
