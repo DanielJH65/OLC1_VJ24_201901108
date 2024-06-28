@@ -63,6 +63,12 @@ public class Function extends Instruction {
             if (result instanceof Break || result instanceof Continue) {
                 return new Errores("Semantico", "Instrucción no valida", ins.getLine(), ins.getCol());
             }
+            if (result instanceof Return aReturn) {
+                if (aReturn.getType().getType() != this.getType().getType()) {
+                    return new Errores("Semantico", "El retorno no es del mismo tipo de la función", ins.getLine(), ins.getCol());
+                }
+                return aReturn.getFinalValue();
+            }
         }
         return null;
     }

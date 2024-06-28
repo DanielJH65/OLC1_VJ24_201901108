@@ -23,6 +23,7 @@ import Instructions.Continue;
 import Instructions.Function;
 import Instructions.StartWith;
 import Instructions.CallFunction;
+import Instructions.Return;
 
 import Expressions.Native;
 import Expressions.Arithmetics;
@@ -108,7 +109,8 @@ INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b       {: RESULT = a; RESULT.add(
             | CONTINUE:a                              {: RESULT = a; :}
             | FUNCTION:a                              {: RESULT = a; :}
             | START:a                                 {: RESULT = a; :}
-            | CALLFUNCTION:a                          {: RESULT = a; :}
+            | CALLFUNCTION:a PYC                      {: RESULT = a; :}
+            | RETURN:a                                {: RESULT = a; :}
             | error PYC
 ;
 
@@ -177,8 +179,12 @@ PARAMSCALL ::= PARAMSCALL:a COMA EXPRESION:b          {: RESULT = a; a.add(b); :
             | EXPRESION:a                             {: RESULT = new LinkedList<Instruction>(); RESULT.add(a); :}
 ;
 
-CALLFUNCTION ::= ID:a PARA PARC PYC                   {: RESULT = new CallFunction(a, new LinkedList<Instruction>(), aleft, aright); :}
-            | ID:a PARA PARAMSCALL:b PARC PYC         {: RESULT = new CallFunction(a, b, aleft, aright); :}
+CALLFUNCTION ::= ID:a PARA PARC                       {: RESULT = new CallFunction(a, new LinkedList<Instruction>(), aleft, aright); :}
+            | ID:a PARA PARAMSCALL:b PARC             {: RESULT = new CallFunction(a, b, aleft, aright); :}
+;
+
+RETURN ::= RRETURN:a PYC                              {: RESULT = new Return(null, aleft, aright); :}
+            | RRETURN EXPRESION:a PYC                 {: RESULT = new Return(a, aleft, aright); :}
 ;
 
 MUTABLE ::= RVAR                                      {: RESULT = true; :}
@@ -218,7 +224,7 @@ EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetic
             | CHAR:a                                  {: RESULT = new Native(a, new Type(TipoDato.CHAR), aleft, aright); :}
             | TRUE:a                                  {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
             | FALSE:a                                 {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
+            | CALLFUNCTION:a                          {: RESULT = a; :}
             | ID:a                                    {: RESULT = new VarAcces(a, aleft, aright); :}
             | PARA EXPRESION:a PARC                   {: RESULT = a; :}
-            | CALLFUNCTION:a                          {: RESULT = a; :}
 ;

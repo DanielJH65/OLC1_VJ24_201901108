@@ -39,29 +39,39 @@ public class While extends Instruction {
         }
 
         boolean break1 = false;
-
+        boolean return1 = false;
+        Return aReturn = null;
         while (Boolean.parseBoolean(this.condition.interpretar(tree, table).toString())) {
             var newTable = new SymbolsTable(table);
             for (var ins : this.instructions) {
                 if (ins instanceof Break) {
                     break1 = true;
+                    break;
                 }
                 if (ins instanceof Continue) {
                     break;
                 }
                 var result = ins.interpretar(tree, newTable);
-                if (result instanceof Errores) {
-                    tree.getErrores().add((Errores) result);
+                if (result instanceof Errores errores) {
+                    tree.getErrores().add(errores);
                 }
                 if (result instanceof Break) {
                     break1 = true;
+                    break;
                 }
                 if (result instanceof Continue) {
                     break;
                 }
+                if(result instanceof Return aReturn1){
+                    return1 = true;
+                    aReturn = aReturn1;
+                }
             }
             if (break1) {
                 break;
+            }
+            if (return1){
+                return aReturn;
             }
             LinkedList<Simbolo> newList = newTable.getSimbolos();
             for (var sym : newList) {

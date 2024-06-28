@@ -51,8 +51,10 @@ public class If extends Instruction {
 
         Break break1 = new Break(0, 0);
         Continue continue1 = new Continue(0, 0);
+        Return return1 = null;
         boolean isBreak = false;
         boolean isContinue = false;
+        boolean isReturn = false;
         if (Boolean.parseBoolean(exp.toString())) {
             for (var ins : this.instructions) {
                 if (ins instanceof Break) {
@@ -74,6 +76,10 @@ public class If extends Instruction {
                 if (result instanceof Continue) {
                     continue1 = (Continue) result;
                     isContinue = true;
+                }
+                if (result instanceof Return aReturn1) {
+                    isReturn = true;
+                    return1 = aReturn1;
                 }
             }
         } else {
@@ -99,6 +105,10 @@ public class If extends Instruction {
                         continue1 = (Continue) result;
                         isContinue = true;
                     }
+                    if (result instanceof Return aReturn1) {
+                        isReturn = true;
+                        return1 = aReturn1;
+                    }
                 }
             }
         }
@@ -115,6 +125,9 @@ public class If extends Instruction {
         }
         if (isContinue) {
             return continue1;
+        }
+        if (isReturn) {
+            return return1;
         }
         return null;
     }

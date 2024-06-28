@@ -71,6 +71,13 @@ public class CallFunction extends Instruction {
             if (functionResult instanceof Errores) {
                 return functionResult;
             }
+            if (function.getType().getType() != TipoDato.VOID){
+                if(functionResult == null){
+                    return new Errores("Semantico", "No hay una sentencia return", function.getLine(), function.getCol());
+                }
+                this.getType().setType(function.getType().getType());
+                return functionResult;
+            }
         }
         return null;
     }
