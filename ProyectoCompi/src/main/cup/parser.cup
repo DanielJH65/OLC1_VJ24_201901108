@@ -30,6 +30,9 @@ import Instructions.Vector1Assignement;
 import Instructions.Vector2Assignement;
 import Instructions.ListStatement;
 import Instructions.ListAppend;
+import Instructions.Struct;
+import Instructions.StructStatement;
+import Instructions.StructAssignement;
 
 import Expressions.Native;
 import Expressions.Arithmetics;
@@ -43,6 +46,7 @@ import Expressions.VarAcces;
 import Expressions.Vector1Acces;
 import Expressions.Vector2Acces;
 import Expressions.ListRemove;
+import Expressions.StructAcces;
 
 import Exceptions.Errores;
 
@@ -71,17 +75,17 @@ terminal String DIGITO, DOUBLE, CADENA, ID;
 terminal char CHAR;
 terminal String PYC, PARA, PARC, LLAVEA, LLAVEC, GUION, COMA, DOT;
 terminal String PRINTLN, TRUE, FALSE, RINT, RDOUBLE, RSTRING, RBOOL, RCHAR, RVAR, RCONST, RIF, RELSE, RMATCH;
-terminal String RWHILE, RDO, RFOR, RCONTINUE, RBREAK, RSTART, RVOID, RRETURN, RLIST, RNEW, RAPPEND, RREMOVE;
+terminal String RWHILE, RDO, RFOR, RCONTINUE, RBREAK, RSTART, RVOID, RRETURN, RLIST, RNEW, RAPPEND, RREMOVE, RSTRUCT;
 terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER, DOSP, EQUALP, CAST1, CAST2, CAST3;
 terminal String EQUAL, NOT, SMALLER, GREATER, OR, AND, XOR, DIFFERENT, SMALLEREQ, GREATEREQ, CORA, CORC;
 
 non terminal LinkedList<Instruction> INICIO, INSTRUCCIONES, PARAMSCALL;
 non terminal LinkedList<Case> CASESLIST;
-non terminal LinkedList<HashMap> PARAMSLIST;
+non terminal LinkedList<HashMap> PARAMSLIST, STRUCTFIELDS, STRUCTFIELDSI;
 non terminal LinkedList<Object> VALORESVEC2;
 non terminal LinkedList<LinkedList> VALORESVEC;
 non terminal Instruction INSTRUCCION, EXPRESION, PRINT, DECLARACION, ASIGNACION, VECTORES, LISTA, LISTAAPPEND, LISTAREMOVE;
-non terminal Instruction IF, MATCH, WHILE, DOWHILE, FOR, BREAK, CONTINUE, START, FUNCTION, CALLFUNCTION, RETURN;
+non terminal Instruction IF, MATCH, WHILE, DOWHILE, FOR, BREAK, CONTINUE, START, FUNCTION, CALLFUNCTION, RETURN, STRUCT, ISTRUCT, STRUCTACCES, ASTRUCT;
 non terminal Case CASE, DEFAULT;
 non terminal Type TIPOS;
 non terminal Object MUTABLE;
@@ -126,6 +130,9 @@ INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b       {: RESULT = a; RESULT.add(
             | LISTA:a                                 {: RESULT = a; :}
             | LISTAAPPEND:a                           {: RESULT = a; :}
             | LISTAREMOVE:a                           {: RESULT = a; :}
+            | STRUCT:a                                {: RESULT = a; :}
+            | ISTRUCT:a                               {: RESULT = a; :}
+            | ASTRUCT:a                               {: RESULT = a; :}
             | error PYC
             | error
 ;
@@ -226,6 +233,34 @@ LISTAAPPEND ::= ID:a DOT RAPPEND PARA EXPRESION:b PARC PYC                      
 LISTAREMOVE ::= ID:a DOT RREMOVE PARA EXPRESION:b PARC PYC                      {: RESULT = new ListRemove(a, b, aleft, aright); :}
 ;
 
+STRUCT ::= RSTRUCT LLAVEA STRUCTFIELDS:b LLAVEC ID:a PYC                        {: RESULT = new Struct(a, b, aleft, aright); :}
+;
+
+STRUCTFIELDS ::= STRUCTFIELDS:a ID:c DOSP TIPOS:b PYC   {: RESULT = a; var map2 = new HashMap<String, Object>(); 
+                                                         map2.put("id",c); map2.put("type", b); RESULT.add(map2); :}
+            | STRUCTFIELDS:a ID:c DOSP ID:b PYC         {: RESULT = a; var map2 = new HashMap<String, Object>(); 
+                                                         map2.put("id",c); map2.put("type", b); RESULT.add(map2); :}
+            | ID:b DOSP TIPOS:a  PYC                    {: RESULT = new LinkedList<HashMap>(); var map = new HashMap<String, Object>(); 
+                                                         map.put("id",b); map.put("type", a); RESULT.add(map); :}
+            | ID:b DOSP ID:a  PYC                       {: RESULT = new LinkedList<HashMap>(); var map = new HashMap<String, Object>(); 
+                                                         map.put("id",b); map.put("type", a); RESULT.add(map); :}
+;
+
+ISTRUCT ::= MUTABLE:a ID:b DOSP ID:c EQUALP LLAVEA STRUCTFIELDSI:d LLAVEC PYC   {: RESULT = new StructStatement(Boolean.parseBoolean(a.toString()), b, c, d, aleft, aright); :}
+;
+
+STRUCTFIELDSI ::= STRUCTFIELDSI:a COMA ID:c DOSP EXPRESION:b                    {: RESULT = a; var map2 = new HashMap<String, Object>(); 
+                                                                                 map2.put("id",c); map2.put("value", b); RESULT.add(map2); :}
+            | ID:b DOSP EXPRESION:a                                             {: RESULT = new LinkedList<HashMap>(); var map = new HashMap<String, Object>(); 
+                                                                                 map.put("id",b); map.put("value", a); RESULT.add(map); :}
+;
+
+STRUCTACCES ::= ID:a DOT ID:b                         {: RESULT = new StructAcces(a, b, aleft, aright); :}
+;
+
+ASTRUCT ::= ID:a DOT ID:b EQUALP EXPRESION:c PYC      {: RESULT = new StructAssignement(a, b, c, aleft, aright); :}
+;
+
 MUTABLE ::= RVAR                                      {: RESULT = true; :}
             | RCONST                                  {: RESULT = false; :}
 ;
@@ -265,6 +300,7 @@ EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetic
             | FALSE:a                                 {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
             | CALLFUNCTION:a                          {: RESULT = a; :}
             | LISTAREMOVE:a                           {: RESULT = a; :}
+            | STRUCTACCES:a                           {: RESULT = a; :}
             | ID:a CORA EXPRESION:b CORC CORA EXPRESION:c CORC {: RESULT = new Vector2Acces(a, b, c, aleft, aright); :}
             | ID:a CORA EXPRESION:b CORC              {: RESULT = new Vector1Acces(a, b, aleft, aright); :}
             | ID:a                                    {: RESULT = new VarAcces(a, aleft, aright); :}

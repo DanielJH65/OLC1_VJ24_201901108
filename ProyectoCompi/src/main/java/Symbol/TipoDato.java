@@ -14,5 +14,6 @@ public enum TipoDato {
     BOOLEAN,
     CHAR,
     STRING,
+    STRUCT,
     VOID
 }

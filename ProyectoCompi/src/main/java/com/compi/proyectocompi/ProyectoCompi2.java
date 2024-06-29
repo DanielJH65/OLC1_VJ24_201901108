@@ -16,6 +16,7 @@ import Instructions.VarIncDec;
 import Instructions.Vector2Statement;
 import Instructions.VectorStatement;
 import Reportes.Simbolo;
+import Instructions.Struct;
 import Symbol.SymbolsTable;
 import Symbol.Tree;
 import java.io.BufferedReader;
@@ -328,6 +329,9 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
                 if (ins instanceof Function) {
                     ast.addFunctions(ins);
                 }
+                if (ins instanceof Struct){
+                    ast.addStruct(ins);
+                }
             }
             for (var ins : ast.getInstructions()) {
                 if (ins == null) {
@@ -363,6 +367,7 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
             errores.addAll(par.errores);
             errores.addAll(ast.getErrores());
             erroresConsola(errores);
+            System.out.println("");
         } catch (Exception ex) {
             System.err.println("Ocurrio un error: " + ex.getMessage());
         }

@@ -4,6 +4,7 @@
  */
 package Symbol;
 
+import Instructions.Struct;
 import Abstract.Instruction;
 import Exceptions.Errores;
 import Instructions.Function;
@@ -20,6 +21,7 @@ public class Tree {
     private SymbolsTable globalTable;
     private LinkedList<Errores> errores;
     private LinkedList<Instruction> functions;
+    private LinkedList<Instruction> structs;
 
     public Tree(LinkedList<Instruction> instructions) {
         this.instructions = instructions;
@@ -27,6 +29,7 @@ public class Tree {
         this.globalTable = new SymbolsTable();
         this.errores = new LinkedList<>();
         this.functions = new LinkedList<>();
+        this.structs = new LinkedList<>();
     }
 
     public LinkedList<Instruction> getInstructions() {
@@ -90,4 +93,28 @@ public class Tree {
         return null;
     }
 
+    public LinkedList<Instruction> getStructs() {
+        return structs;
+    }
+
+    public void setStructs(LinkedList<Instruction> structs) {
+        this.structs = structs;
+    }
+
+    public Instruction getStruct(String id) {
+        for (var ins : this.structs) {
+            if (((Struct) ins).getId().equalsIgnoreCase(id)) {
+                return ins;
+            }
+        }
+        return null;
+    }
+    
+    public void addStruct(Instruction struct){
+        if (this.getStruct(((Struct) struct).getId()) == null) {
+            this.structs.add(struct);
+        } else {
+            this.errores.add(new Errores("Semantico", "El struct ya existe", struct.getLine(), struct.getCol()));
+        }
+    }
 }
