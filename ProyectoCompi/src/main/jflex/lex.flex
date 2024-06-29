@@ -64,6 +64,8 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> "struct"                                    {return new Symbol(sym.RSTRUCT, yyline, yycolumn, yytext());}
 <YYINITIAL> "round"                                     {return new Symbol(sym.RROUND, yyline, yycolumn, yytext());}
 <YYINITIAL> "length"                                    {return new Symbol(sym.RLENGTH, yyline, yycolumn, yytext());}
+<YYINITIAL> "toString"                                  {return new Symbol(sym.RTOSTRING, yyline, yycolumn, yytext());}
+<YYINITIAL> "find"                                      {return new Symbol(sym.RFIND, yyline, yycolumn, yytext());}
 
 <YYINITIAL> ";"                                         {return new Symbol(sym.PYC, yyline, yycolumn, yytext());}
 <YYINITIAL> "("                                         {return new Symbol(sym.PARA, yyline, yycolumn, yytext());}

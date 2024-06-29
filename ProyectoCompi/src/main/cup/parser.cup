@@ -49,6 +49,8 @@ import Expressions.ListRemove;
 import Expressions.StructAcces;
 import Expressions.Round;
 import Expressions.Length;
+import Expressions.ToString;
+import Expressions.Find;
 
 import Exceptions.Errores;
 
@@ -76,8 +78,8 @@ action code
 terminal String DIGITO, DOUBLE, CADENA, ID;
 terminal char CHAR;
 terminal String PYC, PARA, PARC, LLAVEA, LLAVEC, GUION, COMA, DOT;
-terminal String PRINTLN, TRUE, FALSE, RINT, RDOUBLE, RSTRING, RBOOL, RCHAR, RVAR, RCONST, RIF, RELSE, RMATCH, RROUND, RLENGTH;
-terminal String RWHILE, RDO, RFOR, RCONTINUE, RBREAK, RSTART, RVOID, RRETURN, RLIST, RNEW, RAPPEND, RREMOVE, RSTRUCT;
+terminal String PRINTLN, TRUE, FALSE, RINT, RDOUBLE, RSTRING, RBOOL, RCHAR, RVAR, RCONST, RIF, RELSE, RMATCH, RROUND, RLENGTH, RFIND;
+terminal String RWHILE, RDO, RFOR, RCONTINUE, RBREAK, RSTART, RVOID, RRETURN, RLIST, RNEW, RAPPEND, RREMOVE, RSTRUCT, RTOSTRING;
 terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER, DOSP, EQUALP, CAST1, CAST2, CAST3;
 terminal String EQUAL, NOT, SMALLER, GREATER, OR, AND, XOR, DIFFERENT, SMALLEREQ, GREATEREQ, CORA, CORC;
 
@@ -86,7 +88,7 @@ non terminal LinkedList<Case> CASESLIST;
 non terminal LinkedList<HashMap> PARAMSLIST, STRUCTFIELDS, STRUCTFIELDSI;
 non terminal LinkedList<Object> VALORESVEC2;
 non terminal LinkedList<LinkedList> VALORESVEC;
-non terminal Instruction INSTRUCCION, EXPRESION, PRINT, DECLARACION, ASIGNACION, VECTORES, LISTA, LISTAAPPEND, LISTAREMOVE, ROUND, LENGTH;
+non terminal Instruction INSTRUCCION, EXPRESION, PRINT, DECLARACION, ASIGNACION, VECTORES, LISTA, LISTAAPPEND, LISTAREMOVE, ROUND, LENGTH, TOSTRING, FIND;
 non terminal Instruction IF, MATCH, WHILE, DOWHILE, FOR, BREAK, CONTINUE, START, FUNCTION, CALLFUNCTION, RETURN, STRUCT, ISTRUCT, STRUCTACCES, ASTRUCT;
 non terminal Case CASE, DEFAULT;
 non terminal Type TIPOS;
@@ -269,6 +271,12 @@ ROUND ::= RROUND PARA EXPRESION:a PARC                {: RESULT = new Round(a, a
 LENGTH ::= RLENGTH PARA EXPRESION:a PARC              {: RESULT = new Length(a, aleft, aright); :}
 ;
 
+TOSTRING ::= RTOSTRING PARA EXPRESION:a PARC          {: RESULT = new ToString(a, aleft, aright); :}
+;
+
+FIND ::= ID:a DOT RFIND PARA EXPRESION:b PARC         {: RESULT = new Find(a, b, aleft, aright); :}
+;
+
 MUTABLE ::= RVAR                                      {: RESULT = true; :}
             | RCONST                                  {: RESULT = false; :}
 ;
@@ -311,6 +319,8 @@ EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetic
             | STRUCTACCES:a                           {: RESULT = a; :}
             | ROUND:a                                 {: RESULT = a; :}
             | LENGTH:a                                {: RESULT = a; :}
+            | TOSTRING:a                              {: RESULT = a; :}
+            | FIND:a                                  {: RESULT = a; :}
             | ID:a CORA EXPRESION:b CORC CORA EXPRESION:c CORC {: RESULT = new Vector2Acces(a, b, c, aleft, aright); :}
             | ID:a CORA EXPRESION:b CORC              {: RESULT = new Vector1Acces(a, b, aleft, aright); :}
             | ID:a                                    {: RESULT = new VarAcces(a, aleft, aright); :}
