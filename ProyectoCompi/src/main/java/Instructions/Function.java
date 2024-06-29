@@ -57,8 +57,8 @@ public class Function extends Instruction {
     public Object interpretar(Tree tree, SymbolsTable table) {
         for (var ins : this.instructions) {
             var result = ins.interpretar(tree, table);
-            if (result instanceof Errores) {
-                return result;
+            if (result instanceof Errores errores) {
+                tree.getErrores().add(errores);
             }
             if (result instanceof Break || result instanceof Continue) {
                 return new Errores("Semantico", "Instrucción no valida", ins.getLine(), ins.getCol());

@@ -13,6 +13,8 @@ import Instructions.StartWith;
 import Instructions.Statement;
 import Instructions.VarAssignement;
 import Instructions.VarIncDec;
+import Instructions.Vector2Statement;
+import Instructions.VectorStatement;
 import Reportes.Simbolo;
 import Symbol.SymbolsTable;
 import Symbol.Tree;
@@ -331,7 +333,7 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
                 if (ins == null) {
                     continue;
                 }
-                if (ins instanceof Statement || ins instanceof VarAssignement || ins instanceof VarIncDec) {
+                if (ins instanceof Statement || ins instanceof VarAssignement || ins instanceof VarIncDec || ins instanceof VectorStatement || ins instanceof Vector2Statement) {
                     var res = ins.interpretar(ast, table);
                     if (res instanceof Errores) {
                         ast.getErrores().add((Errores) res);
@@ -348,12 +350,12 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
                     break;
                 }
             }
-            
+
             var resultStart = start.interpretar(ast, table);
-            if (resultStart instanceof Errores){
+            if (resultStart instanceof Errores) {
                 ast.getErrores().add((Errores) resultStart);
             }
-                    
+
             txtConsola.setText(ast.getConsole());
             table.getSymbols().addAll(table.getSimbolos());
             symbols.addAll(table.getSymbols());

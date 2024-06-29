@@ -57,6 +57,10 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> "break"                                     {return new Symbol(sym.RBREAK, yyline, yycolumn, yytext());}
 <YYINITIAL> "start_with"                                {return new Symbol(sym.RSTART, yyline, yycolumn, yytext());}
 <YYINITIAL> "return"                                    {return new Symbol(sym.RRETURN, yyline, yycolumn, yytext());}
+<YYINITIAL> "list"                                      {return new Symbol(sym.RLIST, yyline, yycolumn, yytext());}
+<YYINITIAL> "new"                                       {return new Symbol(sym.RNEW, yyline, yycolumn, yytext());}
+<YYINITIAL> "append"                                    {return new Symbol(sym.RAPPEND, yyline, yycolumn, yytext());}
+<YYINITIAL> "remove"                                    {return new Symbol(sym.RREMOVE, yyline, yycolumn, yytext());}
 
 <YYINITIAL> ";"                                         {return new Symbol(sym.PYC, yyline, yycolumn, yytext());}
 <YYINITIAL> "("                                         {return new Symbol(sym.PARA, yyline, yycolumn, yytext());}
@@ -82,6 +86,9 @@ CHAR = [\'](\\\'|\\\n|\\\\|\\\t|\\\r|\\\"|[^\'])?[\']
 <YYINITIAL> "{"                                         {return new Symbol(sym.LLAVEA, yyline, yycolumn, yytext());}
 <YYINITIAL> "}"                                         {return new Symbol(sym.LLAVEC, yyline, yycolumn, yytext());}
 <YYINITIAL> ","                                         {return new Symbol(sym.COMA, yyline, yycolumn, yytext());}
+<YYINITIAL> "["                                         {return new Symbol(sym.CORA, yyline, yycolumn, yytext());}
+<YYINITIAL> "]"                                         {return new Symbol(sym.CORC, yyline, yycolumn, yytext());}
+<YYINITIAL> "."                                         {return new Symbol(sym.DOT, yyline, yycolumn, yytext());}
 
 <YYINITIAL> {DIGITO}                                    {return new Symbol(sym.DIGITO, yyline, yycolumn, yytext());}
 <YYINITIAL> {DOUBLE}                                    {return new Symbol(sym.DOUBLE, yyline, yycolumn, yytext());}

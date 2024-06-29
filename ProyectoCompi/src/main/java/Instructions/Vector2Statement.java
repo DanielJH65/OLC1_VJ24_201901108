@@ -16,30 +16,27 @@ import java.util.LinkedList;
  *
  * @author daniel
  */
-public class VectorStatement extends Instruction {
+public class Vector2Statement  extends Instruction {
 
     private boolean mutable;
     private String id;
-    private LinkedList<Object> expression;
+    private LinkedList<LinkedList> expression;
     LinkedList<Integer> dimensions;
 
-    public VectorStatement(boolean mutable, String id, LinkedList<Object> expression, Type type, int line, int col) {
+    public Vector2Statement(boolean mutable, String id, LinkedList<LinkedList> expression, Type type, int line, int col) {
         super(type, line, col);
         this.mutable = mutable;
         this.id = id;
         this.expression = expression;
-        this.dimensions = new LinkedList();
+        this.dimensions = new LinkedList<>();
     }
-
+    
     @Override
     public Object interpretar(Tree tree, SymbolsTable table) {
         this.dimensions.add(this.expression.size());
-        LinkedList<Object> list = new LinkedList();
+        LinkedList<LinkedList> list = new LinkedList();
         for (int i = 0; i < dimensions.getFirst(); i++) {
             var result = vectors(this.expression.get(i), i, 1, tree, table);
-            if (result instanceof Errores) {
-                return result;
-            }
             list.add(result);
         }
 
@@ -52,17 +49,26 @@ public class VectorStatement extends Instruction {
         return null;
     }
 
-    private Object vectors(Object exp, int i, int nivel, Tree tree, SymbolsTable table) {
+    private LinkedList vectors(Object exp, int i, int nivel, Tree tree, SymbolsTable table) {
         if (exp instanceof LinkedList exp2) {
             if (i == 0) {
                 dimensions.add(exp2.size());
             }
-            if (exp2.size() != dimensions.get(nivel)) {
-                return new Errores("Semantico", "No pueden haber vectores de distintas dimensiones", this.getLine(), this.getCol());
-            }
             LinkedList<Object> list = new LinkedList();
             for (int j = 0; j < exp2.size(); j++) {
-                var result = vectors(exp2.get(j), j, nivel + 1, tree, table);
+                var result = vectors2(exp2.get(j), j, nivel + 1, tree, table);
+                list.add(result);
+            }
+            return list;
+        }
+        return null;
+    }
+    
+    private Object vectors2(Object exp, int i, int nivel, Tree tree, SymbolsTable table) {
+        if (exp instanceof LinkedList exp2) {
+            LinkedList<Object> list = new LinkedList();
+            for (int j = 0; j < exp2.size(); j++) {
+                var result = vectors2(exp2.get(j), j, nivel, tree, table);
                 if (result instanceof Errores) {
                     return result;
                 }
@@ -79,4 +85,5 @@ public class VectorStatement extends Instruction {
         }
         return null;
     }
+    
 }

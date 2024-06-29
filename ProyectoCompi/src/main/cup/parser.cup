@@ -24,6 +24,12 @@ import Instructions.Function;
 import Instructions.StartWith;
 import Instructions.CallFunction;
 import Instructions.Return;
+import Instructions.VectorStatement;
+import Instructions.Vector2Statement;
+import Instructions.Vector1Assignement;
+import Instructions.Vector2Assignement;
+import Instructions.ListStatement;
+import Instructions.ListAppend;
 
 import Expressions.Native;
 import Expressions.Arithmetics;
@@ -34,6 +40,9 @@ import Expressions.Relational;
 import Expressions.RelationalOperators;
 import Expressions.Cast;
 import Expressions.VarAcces;
+import Expressions.Vector1Acces;
+import Expressions.Vector2Acces;
+import Expressions.ListRemove;
 
 import Exceptions.Errores;
 
@@ -60,16 +69,18 @@ action code
 
 terminal String DIGITO, DOUBLE, CADENA, ID;
 terminal char CHAR;
-terminal String PYC, PARA, PARC, LLAVEA, LLAVEC, GUION, COMA;
+terminal String PYC, PARA, PARC, LLAVEA, LLAVEC, GUION, COMA, DOT;
 terminal String PRINTLN, TRUE, FALSE, RINT, RDOUBLE, RSTRING, RBOOL, RCHAR, RVAR, RCONST, RIF, RELSE, RMATCH;
-terminal String RWHILE, RDO, RFOR, RCONTINUE, RBREAK, RSTART, RVOID, RRETURN;
+terminal String RWHILE, RDO, RFOR, RCONTINUE, RBREAK, RSTART, RVOID, RRETURN, RLIST, RNEW, RAPPEND, RREMOVE;
 terminal String ADD, SUB, DENIAL, MULTI, DIV, MODULE, POWER, DOSP, EQUALP, CAST1, CAST2, CAST3;
-terminal String EQUAL, NOT, SMALLER, GREATER, OR, AND, XOR, DIFFERENT, SMALLEREQ, GREATEREQ;
+terminal String EQUAL, NOT, SMALLER, GREATER, OR, AND, XOR, DIFFERENT, SMALLEREQ, GREATEREQ, CORA, CORC;
 
 non terminal LinkedList<Instruction> INICIO, INSTRUCCIONES, PARAMSCALL;
 non terminal LinkedList<Case> CASESLIST;
 non terminal LinkedList<HashMap> PARAMSLIST;
-non terminal Instruction INSTRUCCION, EXPRESION, PRINT, DECLARACION, ASIGNACION;
+non terminal LinkedList<Object> VALORESVEC2;
+non terminal LinkedList<LinkedList> VALORESVEC;
+non terminal Instruction INSTRUCCION, EXPRESION, PRINT, DECLARACION, ASIGNACION, VECTORES, LISTA, LISTAAPPEND, LISTAREMOVE;
 non terminal Instruction IF, MATCH, WHILE, DOWHILE, FOR, BREAK, CONTINUE, START, FUNCTION, CALLFUNCTION, RETURN;
 non terminal Case CASE, DEFAULT;
 non terminal Type TIPOS;
@@ -111,7 +122,12 @@ INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b       {: RESULT = a; RESULT.add(
             | START:a                                 {: RESULT = a; :}
             | CALLFUNCTION:a PYC                      {: RESULT = a; :}
             | RETURN:a                                {: RESULT = a; :}
+            | VECTORES:a                              {: RESULT = a; :}
+            | LISTA:a                                 {: RESULT = a; :}
+            | LISTAAPPEND:a                           {: RESULT = a; :}
+            | LISTAREMOVE:a                           {: RESULT = a; :}
             | error PYC
+            | error
 ;
 
 PRINT ::= PRINTLN PARA EXPRESION:a PARC PYC           {: RESULT = new Print(a, aleft, aright); :}
@@ -121,9 +137,11 @@ DECLARACION ::= MUTABLE:a ID:b DOSP TIPOS:c EQUALP EXPRESION:d PYC              
             | MUTABLE:a ID:b DOSP TIPOS:c PYC                                   {: RESULT = new Statement(Boolean.parseBoolean(a.toString()), b.toString(), c, aleft, aright); :}
 ;
 
-ASIGNACION ::= ID:a EQUALP EXPRESION:b                {: RESULT = new VarAssignement(a, b, aleft, aright); :}
-            | ID:a ADD ADD                            {: RESULT = new VarIncDec(a, true, aleft, aright); :}
-            | ID:a SUB SUB                            {: RESULT = new VarIncDec(a, false, aleft, aright); :}
+ASIGNACION ::= ID:a EQUALP EXPRESION:b                                          {: RESULT = new VarAssignement(a, b, aleft, aright); :}
+            | ID:a ADD ADD                                                      {: RESULT = new VarIncDec(a, true, aleft, aright); :}
+            | ID:a SUB SUB                                                      {: RESULT = new VarIncDec(a, false, aleft, aright); :}
+            | ID:a CORA EXPRESION:b CORC EQUALP EXPRESION:c                     {: RESULT = new Vector1Assignement(a, b, c, aleft, aright); :}
+            | ID:a CORA EXPRESION:b CORC CORA EXPRESION:c CORC EQUALP EXPRESION:d {: RESULT = new Vector2Assignement(a, b, c, d, aleft, aright); :}
 ;
 
 IF ::= RIF PARA EXPRESION:a PARC LLAVEA INSTRUCCIONES:b LLAVEC RELSE LLAVEA INSTRUCCIONES:c LLAVEC          {: RESULT = new If(a, b, c, aleft, aright); :}
@@ -175,7 +193,7 @@ START ::= RSTART ID:a PARA PARC PYC                   {: RESULT = new StartWith(
             | RSTART ID:a PARA PARAMSCALL:b PARC PYC  {: RESULT = new StartWith(a, b, aleft, aright); :}
 ;
 
-PARAMSCALL ::= PARAMSCALL:a COMA EXPRESION:b          {: RESULT = a; a.add(b); :}
+PARAMSCALL ::= PARAMSCALL:a COMA EXPRESION:b          {: RESULT = a; RESULT.add(b); :}
             | EXPRESION:a                             {: RESULT = new LinkedList<Instruction>(); RESULT.add(a); :}
 ;
 
@@ -185,6 +203,27 @@ CALLFUNCTION ::= ID:a PARA PARC                       {: RESULT = new CallFuncti
 
 RETURN ::= RRETURN:a PYC                              {: RESULT = new Return(null, aleft, aright); :}
             | RRETURN EXPRESION:a PYC                 {: RESULT = new Return(a, aleft, aright); :}
+;
+
+VECTORES ::= MUTABLE:a ID:b DOSP TIPOS:c CORA CORC EQUALP CORA VALORESVEC2:d CORC PYC                   {: RESULT = new VectorStatement(Boolean.parseBoolean(a.toString()), b, d, c, aleft, aright); :}
+            | MUTABLE:a ID:b DOSP TIPOS:c CORA CORC CORA CORC EQUALP CORA VALORESVEC:d CORC PYC         {: RESULT = new Vector2Statement(Boolean.parseBoolean(a.toString()), b, d, c, aleft, aright); :}
+;
+
+VALORESVEC ::= VALORESVEC:a COMA CORA VALORESVEC2:b CORC                        {: RESULT = a; RESULT.add(b); :}
+            | CORA VALORESVEC2:a CORC                                           {: RESULT = new LinkedList<LinkedList>(); RESULT.add(a); :}
+;
+
+VALORESVEC2 ::= VALORESVEC2:a COMA EXPRESION:b        {: RESULT = a; RESULT.add(b); :}
+            | EXPRESION:a                             {: RESULT = new LinkedList<Object>(); RESULT.add(a); :}
+;
+
+LISTA ::= RLIST SMALLER TIPOS:a GREATER ID:b EQUALP RNEW RLIST PARA PARC PYC    {: RESULT = new ListStatement(b, a, aleft, aright); :}
+;
+
+LISTAAPPEND ::= ID:a DOT RAPPEND PARA EXPRESION:b PARC PYC                      {: RESULT = new ListAppend(a, b, aleft, aright); :}
+;
+
+LISTAREMOVE ::= ID:a DOT RREMOVE PARA EXPRESION:b PARC PYC                      {: RESULT = new ListRemove(a, b, aleft, aright); :}
 ;
 
 MUTABLE ::= RVAR                                      {: RESULT = true; :}
@@ -225,6 +264,9 @@ EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetic
             | TRUE:a                                  {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
             | FALSE:a                                 {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
             | CALLFUNCTION:a                          {: RESULT = a; :}
+            | LISTAREMOVE:a                           {: RESULT = a; :}
+            | ID:a CORA EXPRESION:b CORC CORA EXPRESION:c CORC {: RESULT = new Vector2Acces(a, b, c, aleft, aright); :}
+            | ID:a CORA EXPRESION:b CORC              {: RESULT = new Vector1Acces(a, b, aleft, aright); :}
             | ID:a                                    {: RESULT = new VarAcces(a, aleft, aright); :}
             | PARA EXPRESION:a PARC                   {: RESULT = a; :}
 ;
