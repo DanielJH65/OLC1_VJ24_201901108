@@ -24,6 +24,10 @@ public class VarAcces extends Instruction {
         this.id = id;
     }
 
+    public String getId() {
+        return id;
+    }
+
     @Override
     public Object interpretar(Tree tree, SymbolsTable table) {
         var value = table.getVariable(this.id);
