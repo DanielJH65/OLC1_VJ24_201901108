@@ -48,6 +48,7 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
     String activeFile = "";
     String nameFile = "";
     String salidaErrores = "";
+    String salidaAST = "";
     LinkedList<Errores> errores = new LinkedList<>();
     LinkedList<Simbolo> symbols = new LinkedList<>();
 
@@ -329,7 +330,7 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
                 if (ins instanceof Function) {
                     ast.addFunctions(ins);
                 }
-                if (ins instanceof Struct){
+                if (ins instanceof Struct) {
                     ast.addStruct(ins);
                 }
             }
@@ -366,6 +367,7 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
             errores.addAll(lex.errores);
             errores.addAll(par.errores);
             errores.addAll(ast.getErrores());
+            doAST(ast);
             erroresConsola(errores);
             System.out.println("");
         } catch (Exception ex) {
@@ -375,6 +377,18 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
 
     private void btnRTokensActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRTokensActionPerformed
         // TODO add your handling code here:
+        try{
+            FileWriter file = new FileWriter("AST.dot");
+            PrintWriter pw = new PrintWriter(file);
+            pw.print(salidaAST);
+            pw.close();
+            
+            String cmd = "dot -Tjpg AST.dot -o AST.jpg";
+            Runtime rt = Runtime.getRuntime();
+            rt.exec(cmd);
+        }catch (Exception ex){
+            System.err.println("Ocurrio un error" + ex.getMessage());
+        }
     }//GEN-LAST:event_btnRTokensActionPerformed
 
     private void btnCerrarPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarPActionPerformed
@@ -492,6 +506,28 @@ public class ProyectoCompi2 extends javax.swing.JFrame {
             System.out.println(ex.getMessage());
             JOptionPane.showMessageDialog(null, "Error al crear el archivo", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void doAST(Tree ast) {
+        String result = "digraph ast{\n";
+        result += "nINICIO[label=\"INICIO\"];\n";
+        result += "nINSTRUCCIONES[label=\"INSTRUCCIONES\"];\n";
+        result += "nINICIO -> nINSTRUCCIONES;\n";
+
+        String insprev = "nINSTRUCCIONES";
+        for (var ins : ast.getInstructions()) {
+            String nodoIN2 = "n" + ast.getContAST();
+            result += nodoIN2 + "[label=\"INSTRUCTIONS\"];\n";
+            result += insprev + " -> " + nodoIN2 + ";\n";
+            String nodoIN3 = "n" + ast.getContAST();
+            result += nodoIN3 + "[label=\"INSTRUCTION\"];\n";
+            result += insprev + " -> " + nodoIN3 + ";\n";
+            result += ins.createAST(ast, nodoIN3);
+            insprev = nodoIN2;
+        }
+
+        result += "\n}";
+        salidaAST = result;
     }
 
     /**

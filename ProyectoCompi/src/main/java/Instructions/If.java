@@ -132,4 +132,86 @@ public class If extends Instruction {
         return null;
     }
 
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoLA = "n" + tree.getContAST();
+
+        String result = nodoLA + "[label=\"IF\"];\n";
+        result += previous + " -> " + nodoLA + ";\n";
+
+        String nodoWHILE = "n" + tree.getContAST();
+        result += nodoWHILE + "[label=\"if\"];\n";
+        result += nodoLA + " -> " + nodoWHILE + ";\n";
+
+        String nodoPARA = "n" + tree.getContAST();
+        result += nodoPARA + "[label=\"(\"];\n";
+        result += nodoLA + " -> " + nodoPARA + ";\n";
+
+        String nodoEXP = "n" + tree.getContAST();
+        result += nodoEXP + "[label=\"EXPRESION\"];\n";
+        result += nodoLA + " -> " + nodoEXP + ";\n";
+
+        String nodoPARC = "n" + tree.getContAST();
+        result += nodoPARC + "[label=\")\"];\n";
+        result += nodoLA + " -> " + nodoPARC + ";\n";
+
+        String nodoLLA = "n" + tree.getContAST();
+        result += nodoLLA + "[label=\"{\"];\n";
+        result += nodoLA + " -> " + nodoLLA + ";\n";
+
+        String nodoIN = "n" + tree.getContAST();
+        result += nodoIN + "[label=\"INSTRUCTIONS\"];\n";
+        result += nodoLA + " -> " + nodoIN + ";\n";
+
+        String insprev = nodoIN;
+        for (var ins : this.instructions) {
+            String nodoIN2 = "n" + tree.getContAST();
+            result += nodoIN2 + "[label=\"INSTRUCTIONS\"];\n";
+            result += insprev + " -> " + nodoIN2 + ";\n";
+            String nodoIN3 = "n" + tree.getContAST();
+            result += nodoIN3 + "[label=\"INSTRUCTION\"];\n";
+            result += insprev + " -> " + nodoIN3 + ";\n";
+            result += ins.createAST(tree, nodoIN3);
+            insprev = nodoIN2;
+        }
+
+        String nodoLLC = "n" + tree.getContAST();
+        result += nodoLLC + "[label=\"}\"];\n";
+        result += nodoLA + " -> " + nodoLLC + ";\n";
+
+        result += this.condition.createAST(tree, nodoEXP);
+
+        if (this.instructionsElse != null) {
+            String nodoWHILE2 = "n" + tree.getContAST();
+            result += nodoWHILE2 + "[label=\"else\"];\n";
+            result += nodoLA + " -> " + nodoWHILE2 + ";\n";
+
+            String nodoLLA2 = "n" + tree.getContAST();
+            result += nodoLLA2 + "[label=\"{\"];\n";
+            result += nodoLA + " -> " + nodoLLA2 + ";\n";
+
+            String nodoINE = "n" + tree.getContAST();
+            result += nodoINE + "[label=\"INSTRUCTIONS\"];\n";
+            result += nodoLA + " -> " + nodoINE + ";\n";
+
+            String insprevE = nodoINE;
+            for (var ins : this.instructions) {
+                String nodoIN2 = "n" + tree.getContAST();
+                result += nodoIN2 + "[label=\"INSTRUCTIONS\"];\n";
+                result += insprevE + " -> " + nodoIN2 + ";\n";
+                String nodoIN3 = "n" + tree.getContAST();
+                result += nodoIN3 + "[label=\"INSTRUCTION\"];\n";
+                result += insprevE + " -> " + nodoIN3 + ";\n";
+                result += ins.createAST(tree, nodoIN3);
+                insprevE = nodoIN2;
+            }
+
+            String nodoLLCE = "n" + tree.getContAST();
+            result += nodoLLCE + "[label=\"}\"];\n";
+            result += nodoLA + " -> " + nodoLLCE + ";\n";
+        }
+
+        return result;
+    }
+
 }

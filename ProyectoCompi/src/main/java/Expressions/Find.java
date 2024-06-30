@@ -39,5 +39,37 @@ public class Find extends Instruction{
         }
     }
 
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoFIND = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+        String nodoDOT = "n" + tree.getContAST();
+        String nodoRFIND = "n" + tree.getContAST();
+        String nodoPA = "n" + tree.getContAST();
+        String nodoEXP = "n" + tree.getContAST();
+        String nodoPC = "n" + tree.getContAST();
+
+        String result = nodoFIND + "[label=\"FIND\"];\n";
+        result += previous + " -> " + nodoFIND + ";\n";
+
+        result += nodoID + "[label=\""+this.id+"\"];\n";
+        result += nodoDOT + "[label=\"\\.\"];\n";
+        result += nodoRFIND + "[label=\"find\"];\n";
+        result += nodoPA + "[label=\"(\"];\n";
+        result += nodoEXP + "[label=\"EXPRESION\"];\n";
+        result += nodoPC + "[label=\")\"];\n";
+        
+        result += nodoFIND + " -> " + nodoID + ";\n";
+        result += nodoFIND + " -> " + nodoDOT + ";\n";
+        result += nodoFIND + " -> " + nodoRFIND + ";\n";
+        result += nodoFIND + " -> " + nodoPA + ";\n";
+        result += nodoFIND + " -> " + nodoEXP + ";\n";
+        result += nodoFIND + " -> " + nodoPC + ";\n";
+        
+        result += this.expression.createAST(tree, nodoEXP);
+
+        return result;
+    }
+
     
 }

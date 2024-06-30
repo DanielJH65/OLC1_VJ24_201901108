@@ -29,6 +29,12 @@ public class Vector2Acces extends Instruction {
         this.pos2 = pos2;
     }
 
+    public String getId() {
+        return id;
+    }
+    
+    
+
     @Override
     public Object interpretar(Tree tree, SymbolsTable table) {
         var value = table.getVariable(this.id);
@@ -60,6 +66,42 @@ public class Vector2Acces extends Instruction {
         } else {
             return new Errores("Semantico", "La variable no es un vector", this.getLine(), this.getCol());
         }
+    }
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoVACCES = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+        String nodoCORA = "n" + tree.getContAST();
+        String nodoPOS = "n" + tree.getContAST();
+        String nodoCORC = "n" + tree.getContAST();
+        String nodoCORA2 = "n" + tree.getContAST();
+        String nodoPOS2 = "n" + tree.getContAST();
+        String nodoCORC2 = "n" + tree.getContAST();
+
+        String result = nodoVACCES + "[label=\"VECTOR ACCES\"];\n";
+        result += previous + " -> " + nodoVACCES + ";\n";
+        
+        result += nodoID + "[label=\"" + this.id + "\"];\n";
+        result += nodoCORA + "[label=\"\\[\"];\n";
+        result += nodoPOS + "[label=\"EXPRESION\"];\n";
+        result += nodoCORC + "[label=\"\\]\"];\n";
+        result += nodoCORA2 + "[label=\"\\[\"];\n";
+        result += nodoPOS2 + "[label=\"EXPRESION\"];\n";
+        result += nodoCORC2 + "[label=\"\\]\"];\n";
+        
+        result += nodoVACCES + " -> " + nodoID + ";\n";
+        result += nodoVACCES + " -> " + nodoCORA + ";\n";
+        result += nodoVACCES + " -> " + nodoPOS + ";\n";
+        result += nodoVACCES + " -> " + nodoCORC + ";\n";
+        result += nodoVACCES + " -> " + nodoCORA2 + ";\n";
+        result += nodoVACCES + " -> " + nodoPOS2 + ";\n";
+        result += nodoVACCES + " -> " + nodoCORC2 + ";\n";
+        
+        result += this.pos1.createAST(tree, nodoPOS);
+        result += this.pos2.createAST(tree, nodoPOS2);
+
+        return result;
     }
 
 }

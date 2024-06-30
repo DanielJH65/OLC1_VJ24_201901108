@@ -60,6 +60,41 @@ public class StartWith extends Instruction{
         }
         return null;
     }
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoFCALL = "n" + tree.getContAST();
+        String nodoFCALL2 = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+        String nodoPARA = "n" + tree.getContAST();
+
+        String result = nodoFCALL + "[label=\"Start With\"];\n";
+        result += previous + " -> " + nodoFCALL+ ";\n";
+
+        result += nodoFCALL2 + "[label=\"Start_With\"];\n";
+        result += nodoID + "[label=\"\\" + this.id + "\"];\n";
+        result += nodoPARA + "[label=\"\\(\"];\n";
+
+        result += nodoFCALL + " -> " + nodoFCALL2+ ";\n";
+        result += nodoFCALL + " -> " + nodoID+ ";\n";
+        result += nodoFCALL + " -> " + nodoPARA+ ";\n";
+
+        for (var param : params) {
+            String nodoEXP = "n" + tree.getContAST();
+            result += nodoEXP + "[label = \"EXPRESION\"];\n";
+            result += nodoFCALL + " -> " + nodoEXP + ";\n";
+
+            result += param.createAST(tree, nodoEXP);
+        }
+
+        String nodoPARC = "n" + tree.getContAST();
+        result += nodoPARC + "[label=\"\\)\"];\n";
+        result += nodoFCALL + " -> " + nodoPARC + ";\n";
+
+        return result;
+    }
+    
+    
     
     
 }

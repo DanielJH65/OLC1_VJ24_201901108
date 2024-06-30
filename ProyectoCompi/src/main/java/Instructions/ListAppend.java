@@ -16,7 +16,8 @@ import java.util.LinkedList;
  *
  * @author daniel
  */
-public class ListAppend extends Instruction{
+public class ListAppend extends Instruction {
+
     private String id;
     private Instruction expression;
 
@@ -49,6 +50,32 @@ public class ListAppend extends Instruction{
         }
         return new Errores("Semantico", "La variable no es una lista", this.getLine(), this.getCol());
     }
-    
-    
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoLA = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+        String nodoDOT = "n" + tree.getContAST();
+        String nodoPARA = "n" + tree.getContAST();
+        String nodoEXP = "n" + tree.getContAST();
+        String nodoPARC = "n" + tree.getContAST();
+
+        String result = nodoLA + "[label=\"LIST APPEND\"];\n";
+        result += previous + " -> " + nodoLA + ";\n";
+
+        result += nodoID + "[label=\"" + this.id + "\"];\n";
+        result += nodoDOT + "[label=\" . \"];\n";
+        result += nodoPARA + "[label=\"(\"];\n";
+        result += nodoEXP + "[label=\"EXPRESION\"];\n";
+        result += nodoPARC + "[label=\")\"];\n";
+        result += nodoLA + " -> " + nodoID + ";\n";
+        result += nodoLA + " -> " + nodoDOT + ";\n";
+        result += nodoLA + " -> " + nodoPARA + ";\n";
+        result += nodoLA + " -> " + nodoEXP + ";\n";
+        result += nodoLA + " -> " + nodoPARC + ";\n";
+        
+        result += this.expression.createAST(tree, nodoEXP);
+        return result;
+    }
+
 }

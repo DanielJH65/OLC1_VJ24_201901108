@@ -23,4 +23,19 @@ public class Continue extends Instruction{
     public Object interpretar(Tree tree, SymbolsTable table) {
         return null;
     }
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoBR = "n" + tree.getContAST();
+        String nodoRBR = "n" + tree.getContAST();
+        
+        String result = nodoBR + "[label=\"CONTINUE\"];\n";
+        result += previous + " -> " + nodoBR + ";\n";
+        
+        result += nodoRBR + "[label=\"continue\"];\n";
+        result += nodoBR + " -> " + nodoRBR + ";\n";
+        return result;
+    }
+    
+    
 }

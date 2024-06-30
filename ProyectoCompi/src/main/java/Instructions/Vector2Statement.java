@@ -16,7 +16,7 @@ import java.util.LinkedList;
  *
  * @author daniel
  */
-public class Vector2Statement  extends Instruction {
+public class Vector2Statement extends Instruction {
 
     private boolean mutable;
     private String id;
@@ -30,7 +30,7 @@ public class Vector2Statement  extends Instruction {
         this.expression = expression;
         this.dimensions = new LinkedList<>();
     }
-    
+
     @Override
     public Object interpretar(Tree tree, SymbolsTable table) {
         this.dimensions.add(this.expression.size());
@@ -63,7 +63,7 @@ public class Vector2Statement  extends Instruction {
         }
         return null;
     }
-    
+
     private Object vectors2(Object exp, int i, int nivel, Tree tree, SymbolsTable table) {
         if (exp instanceof LinkedList exp2) {
             LinkedList<Object> list = new LinkedList();
@@ -85,5 +85,71 @@ public class Vector2Statement  extends Instruction {
         }
         return null;
     }
-    
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoLA = "n" + tree.getContAST();
+        String nodoMUT = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+        String nodoDOSP = "n" + tree.getContAST();
+        String nodoTYPE = "n" + tree.getContAST();
+        String nodoCORA = "n" + tree.getContAST();
+        String nodoCORC = "n" + tree.getContAST();
+        String nodoEQUAL = "n" + tree.getContAST();
+        String nodoCORA2 = "n" + tree.getContAST();
+
+        String nodoMUT2 = "n" + tree.getContAST();
+        String nodoTYPE2 = "n" + tree.getContAST();
+
+        String result = nodoLA + "[label=\"VECTOR STATEMENT\"];\n";
+        result += previous + " -> " + nodoLA + ";\n";
+
+        result += nodoMUT + "[label=\"MUTABLE\"];\n";
+        result += nodoID + "[label=\"" + this.id + "\"];\n";
+        result += nodoDOSP + "[label=\":\"];\n";
+        result += nodoTYPE + "[label=\"TYPE\"];\n";
+        result += nodoCORA + "[label=\"\\[\"];\n";
+        result += nodoCORC + "[label=\"\\]\"];\n";
+        result += nodoEQUAL + "[label=\"=\"];\n";
+        result += nodoCORA2 + "[label=\"\\[\"];\n";
+        result += nodoLA + " -> " + nodoMUT + ";\n";
+        result += nodoLA + " -> " + nodoID + ";\n";
+        result += nodoLA + " -> " + nodoDOSP + ";\n";
+        result += nodoLA + " -> " + nodoTYPE + ";\n";
+        result += nodoLA + " -> " + nodoCORA + ";\n";
+        result += nodoLA + " -> " + nodoCORC + ";\n";
+        result += nodoLA + " -> " + nodoEQUAL + ";\n";
+        result += nodoLA + " -> " + nodoCORA2 + ";\n";
+
+        result += nodoMUT2 + "[label=\"" + (this.mutable ? "var" : "const") + "\"];\n";
+        result += nodoMUT + " -> " + nodoMUT2 + ";\n";
+
+        result += nodoTYPE2 + "[label=\"" + this.getType().getType() + "\"];\n";
+        result += nodoTYPE + " -> " + nodoTYPE2 + ";\n";
+
+        for (var param : this.expression) {
+            String nodoPARA = "n" + tree.getContAST();
+            result += nodoPARA + "[label=\"\\[\"];\n";
+            result += nodoLA + " -> " + nodoPARA + ";\n";
+            for (var ins : param) {
+                String nodoEXP = "n" + tree.getContAST();
+                String nodoCOMA = "n" + tree.getContAST();
+                result += nodoEXP + "[label = \"EXPRESION\"];\n";
+                result += nodoCOMA + "[label = \",\"];\n";
+                result += nodoLA + " -> " + nodoEXP + ";\n";
+                result += nodoLA + " -> " + nodoCOMA + ";\n";
+
+                result += ((Instruction) ins).createAST(tree, nodoEXP);
+            }
+            String nodoPARC = "n" + tree.getContAST();
+            result += nodoPARC + "[label=\"\\]\"];\n";
+            result += nodoLA + " -> " + nodoPARC + ";\n";
+        }
+
+        String nodoPARC = "n" + tree.getContAST();
+        result += nodoPARC + "[label=\"\\]\"];\n";
+        result += nodoLA + " -> " + nodoPARC + ";\n";
+
+        return result;
+    }
 }

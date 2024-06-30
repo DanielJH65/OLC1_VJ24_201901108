@@ -63,4 +63,36 @@ public class Vector1Assignement extends Instruction {
         return new Errores("Semantico", "La variable no es un vector", this.getLine(), this.getCol());
     }
 
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoVACCES = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+        String nodoCORA = "n" + tree.getContAST();
+        String nodoPOS = "n" + tree.getContAST();
+        String nodoCORC = "n" + tree.getContAST();
+        String nodoEQUAL = "n" + tree.getContAST();
+        String nodoEXP = "n" + tree.getContAST();
+
+        String result = nodoVACCES + "[label=\"VECTOR ACCES\"];\n";
+        result += previous + " -> " + nodoVACCES + ";\n";
+
+        result += nodoID + "[label=\"" + this.id + "\"];\n";
+        result += nodoCORA + "[label=\"\\[\"];\n";
+        result += nodoPOS + "[label=\"EXPRESION\"];\n";
+        result += nodoCORC + "[label=\"\\]\"];\n";
+        result += nodoEQUAL + "[label=\"=\"];\n";
+        result += nodoEXP + "[label=\"EXPRESION\"];\n";
+
+        result += nodoVACCES + " -> " + nodoID + ";\n";
+        result += nodoVACCES + " -> " + nodoCORA + ";\n";
+        result += nodoVACCES + " -> " + nodoPOS + ";\n";
+        result += nodoVACCES + " -> " + nodoCORC + ";\n";
+        result += nodoVACCES + " -> " + nodoEQUAL + ";\n";
+        result += nodoVACCES + " -> " + nodoEXP + ";\n";
+
+        result += this.pos.createAST(tree, nodoPOS);
+        result += this.expression.createAST(tree, nodoEXP);
+
+        return result;
+    }
 }

@@ -15,6 +15,7 @@ import Symbol.Type;
  * @author daniel
  */
 public class Native extends Instruction {
+
     private Object value;
 
     public Native(Object value, Type type, int line, int col) {
@@ -27,6 +28,18 @@ public class Native extends Instruction {
         return this.value;
     }
 
-    
-    
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoNATIVE = "n" + tree.getContAST();
+        String nodoVAL = "n" + tree.getContAST();
+
+        String result = nodoNATIVE + "[label=\"NATIVO\"];\n";
+        result += previous + " -> " + nodoNATIVE + ";\n";
+
+        result += nodoVAL + "[label=\"" + this.value.toString() + "\"];\n";
+        result += nodoNATIVE + " -> " + nodoVAL + ";\n";
+
+        return result;
+    }
+
 }

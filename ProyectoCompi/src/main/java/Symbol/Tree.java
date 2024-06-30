@@ -22,6 +22,7 @@ public class Tree {
     private LinkedList<Errores> errores;
     private LinkedList<Instruction> functions;
     private LinkedList<Instruction> structs;
+    private int contAST;
 
     public Tree(LinkedList<Instruction> instructions) {
         this.instructions = instructions;
@@ -30,6 +31,7 @@ public class Tree {
         this.errores = new LinkedList<>();
         this.functions = new LinkedList<>();
         this.structs = new LinkedList<>();
+        this.contAST = 0;
     }
 
     public LinkedList<Instruction> getInstructions() {
@@ -109,12 +111,18 @@ public class Tree {
         }
         return null;
     }
-    
-    public void addStruct(Instruction struct){
+
+    public void addStruct(Instruction struct) {
         if (this.getStruct(((Struct) struct).getId()) == null) {
             this.structs.add(struct);
         } else {
             this.errores.add(new Errores("Semantico", "El struct ya existe", struct.getLine(), struct.getCol()));
         }
     }
+
+    public int getContAST() {
+        this.contAST++;
+        return contAST;
+    }
+
 }

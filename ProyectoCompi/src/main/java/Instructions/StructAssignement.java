@@ -61,4 +61,31 @@ public class StructAssignement extends Instruction {
         }
     }
 
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoLA = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+        String nodoDOT = "n" + tree.getContAST();
+        String nodoPARA = "n" + tree.getContAST();
+        String nodoPARC = "n" + tree.getContAST();
+        String nodoEXP = "n" + tree.getContAST();
+
+        String result = nodoLA + "[label=\"STRUCT ASSIGNEMENT\"];\n";
+        result += previous + " -> " + nodoLA + ";\n";
+
+        result += nodoID + "[label=\"" + this.id + "\"];\n";
+        result += nodoDOT + "[label=\" . \"];\n";
+        result += nodoPARA + "[label=\""+this.field+"\"];\n";
+        result += nodoPARC + "[label=\"=\"];\n";
+        result += nodoEXP + "[label=\"EXPRESION\"];\n";
+        result += nodoLA + " -> " + nodoID + ";\n";
+        result += nodoLA + " -> " + nodoDOT + ";\n";
+        result += nodoLA + " -> " + nodoPARA + ";\n";
+        result += nodoLA + " -> " + nodoEXP + ";\n";
+        result += nodoLA + " -> " + nodoPARC + ";\n";
+        
+        result += this.expression.createAST(tree, nodoEXP);
+        return result;
+    }
+
 }

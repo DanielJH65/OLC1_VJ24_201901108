@@ -133,7 +133,6 @@ INSTRUCCIONES ::= INSTRUCCIONES:a INSTRUCCION:b       {: RESULT = a; RESULT.add(
             | VECTORES:a                              {: RESULT = a; :}
             | LISTA:a                                 {: RESULT = a; :}
             | LISTAAPPEND:a                           {: RESULT = a; :}
-            | LISTAREMOVE:a                           {: RESULT = a; :}
             | STRUCT:a                                {: RESULT = a; :}
             | ISTRUCT:a                               {: RESULT = a; :}
             | ASTRUCT:a                               {: RESULT = a; :}
@@ -231,10 +230,10 @@ VALORESVEC2 ::= VALORESVEC2:a COMA EXPRESION:b        {: RESULT = a; RESULT.add(
 LISTA ::= RLIST SMALLER TIPOS:a GREATER ID:b EQUALP RNEW RLIST PARA PARC PYC    {: RESULT = new ListStatement(b, a, aleft, aright); :}
 ;
 
-LISTAAPPEND ::= ID:a DOT RAPPEND PARA EXPRESION:b PARC PYC                      {: RESULT = new ListAppend(a, b, aleft, aright); :}
+LISTAREMOVE ::= ID:a DOT RREMOVE PARA EXPRESION:b PARC                          {: RESULT = new ListRemove(a, b, aleft, aright); :}
 ;
 
-LISTAREMOVE ::= ID:a DOT RREMOVE PARA EXPRESION:b PARC PYC                      {: RESULT = new ListRemove(a, b, aleft, aright); :}
+LISTAAPPEND ::= ID:a DOT RAPPEND PARA EXPRESION:b PARC PYC                      {: RESULT = new ListAppend(a, b, aleft, aright); :}
 ;
 
 STRUCT ::= RSTRUCT LLAVEA STRUCTFIELDS:b LLAVEC ID:a PYC                        {: RESULT = new Struct(a, b, aleft, aright); :}
@@ -314,8 +313,8 @@ EXPRESION ::= SUB EXPRESION:a                         {: RESULT = new Arithmetic
             | CHAR:a                                  {: RESULT = new Native(a, new Type(TipoDato.CHAR), aleft, aright); :}
             | TRUE:a                                  {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
             | FALSE:a                                 {: RESULT = new Native(a, new Type(TipoDato.BOOLEAN), aleft, aright); :}
-            | CALLFUNCTION:a                          {: RESULT = a; :}
             | LISTAREMOVE:a                           {: RESULT = a; :}
+            | CALLFUNCTION:a                          {: RESULT = a; :}
             | STRUCTACCES:a                           {: RESULT = a; :}
             | ROUND:a                                 {: RESULT = a; :}
             | LENGTH:a                                {: RESULT = a; :}

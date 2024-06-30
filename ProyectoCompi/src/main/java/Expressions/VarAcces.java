@@ -38,4 +38,21 @@ public class VarAcces extends Instruction {
         return value.getValue();
     }
 
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoVACCES = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+
+        String result = nodoVACCES + "[label=\"VARIABLE ACCES\"];\n";
+        result += previous + " -> " + nodoVACCES + ";\n";
+        
+        result += nodoID + "[label=\""+this.id+"\"];\n";
+        
+        result += nodoVACCES + " -> " + nodoID + ";\n";
+
+        return result;
+    }
+    
+    
+
 }

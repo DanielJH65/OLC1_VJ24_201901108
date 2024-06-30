@@ -141,4 +141,45 @@ public class Logic extends Instruction {
             }
         }
     }
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String result = "";
+        if (this.operation == LogicOperators.NOT) {
+            String nodoExp = "n" + tree.getContAST();
+            String nodoMin = "n" + tree.getContAST();
+
+            result += nodoExp + "[label=\"EXPRESION\"];\n";
+            result += nodoMin + "[label=\"!\"];\n";
+
+            result += previous + " -> " + nodoExp + ";\n";
+            result += nodoExp + " -> " + nodoMin + ";\n";
+            result += this.op2.createAST(tree, nodoExp);
+            return result;
+        }
+        String nodoExp1 = "n" + tree.getContAST();
+        String nodoOp = "n" + tree.getContAST();
+        String nodoExp2 = "n" + tree.getContAST();
+
+        result += nodoExp2 + "[label=\"EXPRESION\"];\n";
+        result += nodoOp + "[label=\"" + switch (this.operation) {
+            case OR ->
+                "||";
+            case AND ->
+                "&&";
+            case XOR ->
+                "^";
+            default ->
+                "";
+        } + "\"];\n";
+        result += nodoExp2 + "[label=\"EXPRESION\"];\n";
+
+        result += previous + " -> " + nodoExp1 + ";\n";
+        result += previous + " -> " + nodoOp + ";\n";
+        result += previous + " -> " + nodoExp2 + ";\n";
+        result += this.op1.createAST(tree, nodoExp1);
+        result += this.op2.createAST(tree, nodoExp2);
+        return result;
+    }
+    
 }

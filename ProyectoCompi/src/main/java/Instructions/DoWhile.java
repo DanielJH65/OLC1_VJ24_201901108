@@ -62,7 +62,7 @@ public class DoWhile extends Instruction {
                 if (result instanceof Continue) {
                     break;
                 }
-                if(result instanceof Return aReturn1){
+                if (result instanceof Return aReturn1) {
                     return1 = true;
                     aReturn = aReturn1;
                 }
@@ -70,7 +70,7 @@ public class DoWhile extends Instruction {
             if (break1) {
                 break;
             }
-            if (return1){
+            if (return1) {
                 return aReturn;
             }
             LinkedList<Simbolo> newList = newTable.getSimbolos();
@@ -84,6 +84,62 @@ public class DoWhile extends Instruction {
         } while (Boolean.parseBoolean(this.condition.interpretar(tree, table).toString()));
 
         return null;
+    }
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoLA = "n" + tree.getContAST();
+
+        String result = nodoLA + "[label=\"DO-WHILE\"];\n";
+        result += previous + " -> " + nodoLA + ";\n";
+        
+        String nodoDO = "n" + tree.getContAST();
+        result += nodoDO + "[label=\"do\"];\n";
+        result += nodoLA + " -> " + nodoDO + ";\n";
+
+        String nodoLLA = "n" + tree.getContAST();
+        result += nodoLLA + "[label=\"{\"];\n";
+        result += nodoLA + " -> " + nodoLLA + ";\n";
+
+        String nodoIN = "n" + tree.getContAST();
+        result += nodoIN + "[label=\"INSTRUCTIONS\"];\n";
+        result += nodoLA + " -> " + nodoIN + ";\n";
+
+        String insprev = nodoIN;
+        for (var ins : this.instructions) {
+            String nodoIN2 = "n" + tree.getContAST();
+            result += nodoIN2 + "[label=\"INSTRUCTIONS\"];\n";
+            result += insprev + " -> " + nodoIN2 + ";\n";
+            String nodoIN3 = "n" + tree.getContAST();
+            result += nodoIN3 + "[label=\"INSTRUCTION\"];\n";
+            result += insprev + " -> " + nodoIN3 + ";\n";
+            result += ins.createAST(tree, nodoIN3);
+            insprev = nodoIN2;
+        }
+
+        String nodoLLC = "n" + tree.getContAST();
+        result += nodoLLC + "[label=\"}\"];\n";
+        result += nodoLA + " -> " + nodoLLC + ";\n";
+        
+        String nodoWHILE = "n" + tree.getContAST();
+        result += nodoWHILE + "[label=\"while\"];\n";
+        result += nodoLA + " -> " + nodoWHILE + ";\n";
+        
+        String nodoPARA = "n" + tree.getContAST();
+        result += nodoPARA + "[label=\"(\"];\n";
+        result += nodoLA + " -> " + nodoPARA + ";\n";
+        
+        String nodoEXP = "n" + tree.getContAST();
+        result += nodoEXP + "[label=\"EXPRESION\"];\n";
+        result += nodoLA + " -> " + nodoEXP + ";\n";
+        
+        String nodoPARC = "n" + tree.getContAST();
+        result += nodoPARC + "[label=\")\"];\n";
+        result += nodoLA + " -> " + nodoPARC + ";\n";
+        
+        result += this.condition.createAST(tree, nodoEXP);
+
+        return result;
     }
 
 }

@@ -48,4 +48,26 @@ public class StructAcces extends Instruction {
         }
     }
 
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoSACCES = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+        String nodoDOT = "n" + tree.getContAST();
+        String nodoID2 = "n" + tree.getContAST();
+
+        String result = nodoSACCES + "[label=\"STRUCT ACCES\"];\n";
+        result += previous + " -> " + nodoSACCES + ";\n";
+        
+        result += nodoID + "[label=\""+this.id+"\"];\n";
+        result += nodoDOT + "[label=\".\"];\n";
+        result += nodoID2 + "[label=\""+this.field+"\"];\n";
+        
+        result += nodoSACCES + " -> " + nodoID + ";\n";
+        result += nodoSACCES + " -> " + nodoDOT + ";\n";
+        result += nodoSACCES + " -> " + nodoID2 + ";\n";
+
+        return result;
+    }
+    
+    
 }

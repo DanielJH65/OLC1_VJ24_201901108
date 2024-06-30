@@ -22,6 +22,8 @@ public abstract class Instruction {
     }
     
     public abstract Object interpretar(Tree tree, SymbolsTable table);
+    
+    public abstract String createAST(Tree tree, String previous);
 
     public Type getType() {
         return type;

@@ -7,6 +7,12 @@ package Expressions;
 import Abstract.Instruction;
 import Exceptions.Errores;
 import static Expressions.ArithmeticOperators.ADDITION;
+import static Expressions.ArithmeticOperators.DENIAL;
+import static Expressions.ArithmeticOperators.DIVISION;
+import static Expressions.ArithmeticOperators.MODULE;
+import static Expressions.ArithmeticOperators.MULTIPLICATION;
+import static Expressions.ArithmeticOperators.POWER;
+import static Expressions.ArithmeticOperators.SUBTRACTION;
 import Symbol.SymbolsTable;
 import Symbol.TipoDato;
 import static Symbol.TipoDato.BOOLEAN;
@@ -500,6 +506,52 @@ public class Arithmetics extends Instruction {
                 return new Errores("Semantico", "Negación con tipo no valida", this.getLine(), this.getCol());
             }
         }
+    }
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String result = "";
+        if (this.operation == ArithmeticOperators.DENIAL) {
+            String nodoExp = "n" + tree.getContAST();
+            String nodoMin = "n" + tree.getContAST();
+
+            result += nodoExp + "[label=\"EXPRESION\"];\n";
+            result += nodoMin + "[label=\"-\"];\n";
+
+            result += previous + " -> " + nodoExp + ";\n";
+            result += nodoExp + " -> " + nodoMin + ";\n";
+            result += this.op2.createAST(tree, nodoExp);
+            return result;
+        }
+        String nodoExp1 = "n" + tree.getContAST();
+        String nodoOp = "n" + tree.getContAST();
+        String nodoExp2 = "n" + tree.getContAST();
+
+        result += nodoExp2 + "[label=\"EXPRESION\"];\n";
+        result += nodoOp + "[label=\"" + switch (this.operation) {
+            case ADDITION ->
+                "+";
+            case SUBTRACTION ->
+                "+";
+            case MULTIPLICATION ->
+                "+";
+            case DIVISION ->
+                "+";
+            case POWER ->
+                "+";
+            case MODULE ->
+                "+";
+            default ->
+                "";
+        } + "\"];\n";
+        result += nodoExp2 + "[label=\"EXPRESION\"];\n";
+
+        result += previous + " -> " + nodoExp1 + ";\n";
+        result += previous + " -> " + nodoOp + ";\n";
+        result += previous + " -> " + nodoExp2 + ";\n";
+        result += this.op1.createAST(tree, nodoExp1);
+        result += this.op2.createAST(tree, nodoExp2);
+        return result;
     }
 
 }

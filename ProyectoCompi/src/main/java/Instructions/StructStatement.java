@@ -52,7 +52,7 @@ public class StructStatement extends Instruction {
             var id = (String) struct.getFields().get(i).get("id");
             var type2 = (Type) struct.getFields().get(i).get("type");
             var id2 = (String) this.data.get(i).get("id");
-            if(!id.equalsIgnoreCase(id2)){
+            if (!id.equalsIgnoreCase(id2)) {
                 return new Errores("Semantico", "Los campos no coincide con el nombre", this.getLine(), this.getCol());
             }
             var value = ((Instruction) this.data.get(i).get("value"));
@@ -79,6 +79,67 @@ public class StructStatement extends Instruction {
             return new Errores("Sintactico", "Identificador de variable existente", this.getLine(), this.getCol());
         }
         return null;
+    }
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoLA = "n" + tree.getContAST();
+        String nodoMUT = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+        String nodoDOSP = "n" + tree.getContAST();
+        String nodoID2 = "n" + tree.getContAST();
+        String nodoEQUAL = "n" + tree.getContAST();
+
+        String nodoMUT2 = "n" + tree.getContAST();
+
+        String result = nodoLA + "[label=\"STRUCT STATEMENT\"];\n";
+        result += previous + " -> " + nodoLA + ";\n";
+
+        result += nodoMUT + "[label=\"MUTABLE\"];\n";
+        result += nodoID + "[label=\"" + this.id + "\"];\n";
+        result += nodoDOSP + "[label=\":\"];\n";
+        result += nodoID2 + "[label=\"" + this.struct + "\"];\n";
+        result += nodoEQUAL + "[label=\"=\"];\n";
+        result += nodoLA + " -> " + nodoMUT + ";\n";
+        result += nodoLA + " -> " + nodoID + ";\n";
+        result += nodoLA + " -> " + nodoDOSP + ";\n";
+        result += nodoLA + " -> " + nodoID2 + ";\n";
+        result += nodoLA + " -> " + nodoEQUAL + ";\n";
+
+        result += nodoMUT2 + "[label=\"" + (this.isMutable ? "var" : "const") + "\"];\n";
+        result += nodoMUT + " -> " + nodoMUT2 + ";\n";
+
+        String nodoLLA = "n" + tree.getContAST();
+        result += nodoLLA + "[label=\"{\"];\n";
+        result += nodoLA + " -> " + nodoLLA + ";\n";
+
+        String nodoIN = "n" + tree.getContAST();
+        result += nodoIN + "[label=\"LISTA STRUCT\"];\n";
+        result += nodoLA + " -> " + nodoIN + ";\n";
+
+        String insprev = nodoIN;
+        for (var param : this.data) {
+            String nodoIN2 = "n" + tree.getContAST();
+            result += nodoIN2 + "[label=\"LISTA STRUCT\"];\n";
+            result += insprev + " -> " + nodoIN2 + ";\n";
+            String nodoIN3 = "n" + tree.getContAST();
+            result += nodoIN3 + "[label=\"FIELD STRUCT\"];\n";
+            result += insprev + " -> " + nodoIN3 + ";\n";
+            String nodoID3 = "n" + tree.getContAST();
+            result += nodoID3 + "[label=\"" + param.get("id") + "\"];\n";
+            result += nodoIN3 + " -> " + nodoID3 + ";\n";
+            String nodoTYPE = "n" + tree.getContAST();
+            result += nodoTYPE + "[label=\"EXPRESSION\"];\n";
+            result += nodoIN3 + " -> " + nodoTYPE + ";\n";
+            result += ((Instruction) param.get("value")).createAST(tree, nodoTYPE);
+            insprev = nodoIN2;
+        }
+
+        String nodoPARC = "n" + tree.getContAST();
+        result += nodoPARC + "[label=\"}\"];\n";
+        result += nodoLA + " -> " + nodoPARC + ";\n";
+
+        return result;
     }
 
 }

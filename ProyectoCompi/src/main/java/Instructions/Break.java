@@ -24,5 +24,20 @@ public class Break extends Instruction{
     public Object interpretar(Tree tree, SymbolsTable table) {
         return null;
     }
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoBR = "n" + tree.getContAST();
+        String nodoRBR = "n" + tree.getContAST();
+        
+        String result = nodoBR + "[label=\"BREAK\"];\n";
+        result += previous + " -> " + nodoBR + ";\n";
+        
+        result += nodoRBR + "[label=\"break\"];\n";
+        result += nodoBR + " -> " + nodoRBR + ";\n";
+        return result;
+    }
+    
+    
     
 }

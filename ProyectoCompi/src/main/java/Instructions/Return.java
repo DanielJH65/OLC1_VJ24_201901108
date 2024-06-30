@@ -15,7 +15,8 @@ import Symbol.Type;
  *
  * @author daniel
  */
-public class Return extends Instruction{
+public class Return extends Instruction {
+
     private Instruction value;
     private Object finalValue;
 
@@ -34,9 +35,9 @@ public class Return extends Instruction{
 
     @Override
     public Object interpretar(Tree tree, SymbolsTable table) {
-        if(value != null){
+        if (value != null) {
             var interValue = this.value.interpretar(tree, table);
-            if(interValue instanceof Errores){
+            if (interValue instanceof Errores) {
                 return interValue;
             }
             this.getType().setType(this.value.getType().getType());
@@ -45,5 +46,26 @@ public class Return extends Instruction{
         }
         return this;
     }
-    
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoBR = "n" + tree.getContAST();
+        String nodoRBR = "n" + tree.getContAST();
+
+        String result = nodoBR + "[label=\"RETURN\"];\n";
+        result += previous + " -> " + nodoBR + ";\n";
+
+        result += nodoRBR + "[label=\"return\"];\n";
+        result += nodoBR + " -> " + nodoRBR + ";\n";
+
+        if (this.value != null) {
+            String nodoEXP = "n" + tree.getContAST();
+            result += nodoEXP + "[label=\"(\"];\n";
+            result += nodoBR + " -> " + nodoEXP + ";\n";
+
+            result += this.value.createAST(tree, nodoEXP);
+        }
+        return result;
+    }
+
 }

@@ -555,4 +555,39 @@ public class Relational extends Instruction {
             }
         }
     }
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String result = "";
+        String nodoExp1 = "n" + tree.getContAST();
+        String nodoOp = "n" + tree.getContAST();
+        String nodoExp2 = "n" + tree.getContAST();
+
+        result += nodoExp2 + "[label=\"EXPRESION\"];\n";
+        result += nodoOp + "[label=\"" + switch (this.operation) {
+            case EQUAL ->
+                "==";
+            case DIFFERENT ->
+                "!=";
+            case SMALLER ->
+                "\\<";
+            case SMALLEREQUAL ->
+                "\\<=";
+            case GREATER ->
+                "\\>";
+            case GREATEREQUAL ->
+                "\\>=";
+            default ->
+                "";
+        } + "\"];\n";
+        result += nodoExp2 + "[label=\"EXPRESION\"];\n";
+
+        result += previous + " -> " + nodoExp1 + ";\n";
+        result += previous + " -> " + nodoOp + ";\n";
+        result += previous + " -> " + nodoExp2 + ";\n";
+        result += this.op1.createAST(tree, nodoExp1);
+        result += this.op2.createAST(tree, nodoExp2);
+        return result;
+    }
+    
 }

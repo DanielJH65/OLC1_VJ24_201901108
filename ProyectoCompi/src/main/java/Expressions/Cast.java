@@ -75,4 +75,33 @@ public class Cast extends Instruction {
         }
     }
 
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoCAST = "n" + tree.getContAST();
+        String nodoPA = "n" + tree.getContAST();
+        String nodoTYPE = "n" + tree.getContAST();
+        String nodoTYPE2 = "n" + tree.getContAST();
+        String nodoPC = "n" + tree.getContAST();
+        String nodoEXP = "n" + tree.getContAST();
+
+        String result = nodoCAST + "[label=\"CASTEO\"];\n";
+        result += previous + " -> " + nodoCAST;
+
+        result += nodoPA + "[label=\"(\"];\n";
+        result += nodoTYPE + "[label=\"TYPE\"];\n";
+        result += nodoPC + "[label=\")\"];\n";
+        result += nodoEXP + "[label=\"EXPRESION\"];\n";
+        result += nodoTYPE2 + "[label=\"" + this.getType().getType() + "\"];\n";
+        
+        result += nodoCAST + " -> " + nodoPA;
+        result += nodoCAST + " -> " + nodoTYPE;
+        result += nodoCAST + " -> " + nodoPC;
+        result += nodoCAST + " -> " + nodoEXP;
+        result += nodoTYPE + " -> " + nodoTYPE2;
+        
+        result += this.expression.createAST(tree, nodoEXP);
+
+        return result;
+    }
+
 }

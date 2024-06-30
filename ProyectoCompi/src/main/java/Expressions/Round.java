@@ -38,4 +38,31 @@ public class Round extends Instruction {
         return (int) Math.round((double) op);
     }
 
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoROUND = "n" + tree.getContAST();
+        String nodoRR = "n" + tree.getContAST();
+        String nodoPA = "n" + tree.getContAST();
+        String nodoEXP = "n" + tree.getContAST();
+        String nodoPC = "n" + tree.getContAST();
+
+        String result = nodoROUND + "[label=\"LENGTH\"];\n";
+        result += previous + " -> " + nodoROUND + ";\n";
+        
+        result += nodoRR + "[label=\"round\"];\n";
+        result += nodoPA + "[label=\"(\"];\n";
+        result += nodoEXP + "[label=\"EXPRESION\"];\n";
+        result += nodoPC + "[label=\")\"];\n";
+        
+        result += nodoROUND + " -> " + nodoRR + ";\n";
+        result += nodoROUND + " -> " + nodoPA + ";\n";
+        result += nodoROUND + " -> " + nodoEXP + ";\n";
+        result += nodoROUND + " -> " + nodoPC + ";\n";
+        
+        result += this.expression.createAST(tree, nodoEXP);
+
+        return result;
+    }
+
+    
 }

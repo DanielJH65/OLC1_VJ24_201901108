@@ -48,4 +48,25 @@ public class VarAssignement extends Instruction {
         return null;
     }
 
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoLA = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+        String nodoDOT = "n" + tree.getContAST();
+        String nodoEXP = "n" + tree.getContAST();
+
+        String result = nodoLA + "[label=\"VARIABLE ASSIGNEMENT\"];\n";
+        result += previous + " -> " + nodoLA + ";\n";
+
+        result += nodoID + "[label=\"" + this.id + "\"];\n";
+        result += nodoDOT + "[label=\"=\"];\n";
+        result += nodoEXP + "[label=\"EXPRESION\"];\n";
+        result += nodoLA + " -> " + nodoID + ";\n";
+        result += nodoLA + " -> " + nodoDOT + ";\n";
+        result += nodoLA + " -> " + nodoEXP + ";\n";
+        
+        result += this.expression.createAST(tree, nodoEXP);
+        return result;
+    }
+
 }

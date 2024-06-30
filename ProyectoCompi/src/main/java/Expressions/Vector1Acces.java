@@ -48,4 +48,35 @@ public class Vector1Acces extends Instruction {
         }
     }
 
+    public String getId() {
+        return id;
+    }
+    
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoVACCES = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+        String nodoCORA = "n" + tree.getContAST();
+        String nodoPOS = "n" + tree.getContAST();
+        String nodoCORC = "n" + tree.getContAST();
+
+        String result = nodoVACCES + "[label=\"VECTOR ACCES\"];\n";
+        result += previous + " -> " + nodoVACCES + ";\n";
+
+        result += nodoID + "[label=\"" + this.id + "\"];\n";
+        result += nodoCORA + "[label=\"\\[\"];\n";
+        result += nodoPOS + "[label=\"EXPRESION\"];\n";
+        result += nodoCORC + "[label=\"\\]\"];\n";
+
+        result += nodoVACCES + " -> " + nodoID + ";\n";
+        result += nodoVACCES + " -> " + nodoCORA + ";\n";
+        result += nodoVACCES + " -> " + nodoPOS + ";\n";
+        result += nodoVACCES + " -> " + nodoCORC + ";\n";
+
+        result += this.pos.createAST(tree, nodoPOS);
+
+        return result;
+    }
+
 }

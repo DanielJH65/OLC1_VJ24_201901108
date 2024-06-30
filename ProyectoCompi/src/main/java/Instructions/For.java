@@ -72,7 +72,7 @@ public class For extends Instruction {
                 if (result instanceof Continue) {
                     break;
                 }
-                if(result instanceof Return aReturn1){
+                if (result instanceof Return aReturn1) {
                     return1 = true;
                     aReturn = aReturn1;
                 }
@@ -84,7 +84,7 @@ public class For extends Instruction {
             if (break1) {
                 break;
             }
-            if (return1){
+            if (return1) {
                 return aReturn;
             }
             LinkedList<Simbolo> newList = newTable.getSimbolos();
@@ -100,4 +100,77 @@ public class For extends Instruction {
         return null;
     }
 
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoLA = "n" + tree.getContAST();
+
+        String result = nodoLA + "[label=\"FOR\"];\n";
+        result += previous + " -> " + nodoLA + ";\n";
+
+        String nodoWHILE = "n" + tree.getContAST();
+        result += nodoWHILE + "[label=\"while\"];\n";
+        result += nodoLA + " -> " + nodoWHILE + ";\n";
+
+        String nodoPARA = "n" + tree.getContAST();
+        result += nodoPARA + "[label=\"(\"];\n";
+        result += nodoLA + " -> " + nodoPARA + ";\n";
+
+        String nodoEXP = "n" + tree.getContAST();
+        result += nodoEXP + "[label=\"STATEMENT\"];\n";
+        result += nodoLA + " -> " + nodoEXP + ";\n";
+
+        result += this.assignement.createAST(tree, nodoEXP);
+        
+        String nodoPYC1 = "n" + tree.getContAST();
+        result += nodoPYC1 + "[label=\";\"];\n";
+        result += nodoLA + " -> " + nodoPYC1 + ";\n";
+        
+        String nodoEXP2 = "n" + tree.getContAST();
+        result += nodoEXP2 + "[label=\"CONDITION\"];\n";
+        result += nodoLA + " -> " + nodoEXP2 + ";\n";
+
+        result += this.condition.createAST(tree, nodoEXP2);
+        
+        String nodoPYC2 = "n" + tree.getContAST();
+        result += nodoPYC2 + "[label=\";\"];\n";
+        result += nodoLA + " -> " + nodoPYC2 + ";\n";
+        
+        String nodoEXP3 = "n" + tree.getContAST();
+        result += nodoEXP3 + "[label=\"ASIGNEMENT\"];\n";
+        result += nodoLA + " -> " + nodoEXP3 + ";\n";
+
+        result += this.increment.createAST(tree, nodoEXP3);
+
+        String nodoPARC = "n" + tree.getContAST();
+        result += nodoPARC + "[label=\")\"];\n";
+        result += nodoLA + " -> " + nodoPARC + ";\n";
+
+        String nodoLLA = "n" + tree.getContAST();
+        result += nodoLLA + "[label=\"{\"];\n";
+        result += nodoLA + " -> " + nodoLLA + ";\n";
+
+        String nodoIN = "n" + tree.getContAST();
+        result += nodoIN + "[label=\"INSTRUCTIONS\"];\n";
+        result += nodoLA + " -> " + nodoIN + ";\n";
+
+        String insprev = nodoIN;
+        for (var ins : this.instructions) {
+            String nodoIN2 = "n" + tree.getContAST();
+            result += nodoIN2 + "[label=\"INSTRUCTIONS\"];\n";
+            result += insprev + " -> " + nodoIN2 + ";\n";
+            String nodoIN3 = "n" + tree.getContAST();
+            result += nodoIN3 + "[label=\"INSTRUCTION\"];\n";
+            result += insprev + " -> " + nodoIN3 + ";\n";
+            result += ins.createAST(tree, nodoIN3);
+            insprev = nodoIN2;
+        }
+
+        String nodoLLC = "n" + tree.getContAST();
+        result += nodoLLC + "[label=\"}\"];\n";
+        result += nodoLA + " -> " + nodoLLC + ";\n";
+
+        result += this.condition.createAST(tree, nodoEXP);
+
+        return result;
+    }
 }

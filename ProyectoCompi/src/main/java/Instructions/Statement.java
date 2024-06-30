@@ -17,7 +17,8 @@ import Symbol.Type;
  *
  * @author daniel
  */
-public class Statement extends Instruction{
+public class Statement extends Instruction {
+
     private boolean mutable;
     private String id;
     private Instruction expression;
@@ -33,7 +34,7 @@ public class Statement extends Instruction{
         super(type, line, col);
         this.mutable = mutable;
         this.id = id;
-        switch (type.getType()){
+        switch (type.getType()) {
             case INTEGER ->
                 this.expression = new Native(0, new Type(TipoDato.INTEGER), line, col);
             case DOUBLE ->
@@ -50,25 +51,64 @@ public class Statement extends Instruction{
     @Override
     public Object interpretar(Tree tree, SymbolsTable table) {
         var expression = this.expression.interpretar(tree, table);
-        
-        if(expression instanceof Errores){
+
+        if (expression instanceof Errores) {
             return expression;
         }
-        
-        if(this.expression.getType().getType() != this.getType().getType()){
+
+        if (this.expression.getType().getType() != this.getType().getType()) {
             return new Errores("Sintactico", "Variable de distinto tipo", this.getLine(), this.getCol());
         }
-        
+
         Symbol sym = new Symbol(this.getType(), this.id, expression, this.mutable, this.getLine(), this.getCol());
-        
+
         boolean created = table.setVariable(sym);
-        
-        if(!created){
+
+        if (!created) {
             return new Errores("Sintactico", "Identificador de variable existente", this.getLine(), this.getCol());
         }
-        
+
         return null;
     }
-    
-    
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoLA = "n" + tree.getContAST();
+        String nodoMUT = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+        String nodoDOSP = "n" + tree.getContAST();
+        String nodoTYPE = "n" + tree.getContAST();
+        String nodoEQUAL = "n" + tree.getContAST();
+        String nodoEXP = "n" + tree.getContAST();
+        
+        String nodoMUT2 = "n" + tree.getContAST();
+        String nodoTYPE2 = "n" + tree.getContAST();
+
+        String result = nodoLA + "[label=\"VARIABLE STATEMENT\"];\n";
+        result += previous + " -> " + nodoLA + ";\n";
+
+        result += nodoMUT + "[label=\"MUTABLE\"];\n";
+        result += nodoID + "[label=\"" + this.id + "\"];\n";
+        result += nodoDOSP + "[label=\":\"];\n";
+        result += nodoTYPE + "[label=\"TYPE\"];\n";
+        result += nodoEQUAL + "[label=\"=\"];\n";
+        result += nodoEXP + "[label=\"EXPRESION\"];\n";
+        result += nodoLA + " -> " + nodoMUT + ";\n";
+        result += nodoLA + " -> " + nodoID + ";\n";
+        result += nodoLA + " -> " + nodoDOSP + ";\n";
+        result += nodoLA + " -> " + nodoTYPE + ";\n";
+        result += nodoLA + " -> " + nodoEQUAL + ";\n";
+        result += nodoLA + " -> " + nodoEXP + ";\n";
+
+        result += nodoMUT2 + "[label=\"" + (this.mutable ? "var" : "const") + "\"];\n";
+        result += nodoMUT + " -> " + nodoMUT2 + ";\n";
+        
+        result += nodoTYPE2 + "[label=\"" + this.getType().getType() + "\"];\n";
+        result += nodoTYPE + " -> " + nodoTYPE2 + ";\n";
+        
+        result += this.expression.createAST(tree, nodoEXP);
+
+        return result;
+    }
+
 }

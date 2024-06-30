@@ -15,7 +15,8 @@ import Symbol.Type;
  *
  * @author daniel
  */
-public class VarIncDec extends Instruction{
+public class VarIncDec extends Instruction {
+
     private String id;
     private boolean inc;
 
@@ -39,24 +40,38 @@ public class VarIncDec extends Instruction{
             return new Errores("Semantico", "El tipo de la variable no permite incremento o decremeto", this.getLine(), this.getCol());
         }
         var newValue = value.getValue();
-        if (value.getType().getType() == TipoDato.INTEGER){
-            if(inc){
+        if (value.getType().getType() == TipoDato.INTEGER) {
+            if (inc) {
                 newValue = ((int) newValue) + 1;
-            }else{
+            } else {
                 newValue = ((int) newValue) - 1;
             }
-        }else if (value.getType().getType() == TipoDato.DOUBLE){
-            if(inc){
+        } else if (value.getType().getType() == TipoDato.DOUBLE) {
+            if (inc) {
                 newValue = ((double) newValue) + 1.0;
-            }else{
+            } else {
                 newValue = ((double) newValue) - 1.0;
             }
         }
-        
+
         value.setValue(newValue);
         return null;
     }
-    
-    
-    
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoLA = "n" + tree.getContAST();
+        String nodoID = "n" + tree.getContAST();
+        String nodoDOT = "n" + tree.getContAST();
+
+        String result = nodoLA + "[label=\"VARIABLE INC OR DEC\"];\n";
+        result += previous + " -> " + nodoLA + ";\n";
+
+        result += nodoID + "[label=\"" + this.id + "\"];\n";
+        result += nodoDOT + "[label=\"" + (this.inc ? "++" : "--") + "\"];\n";
+        result += nodoLA + " -> " + nodoID + ";\n";
+        result += nodoLA + " -> " + nodoDOT + ";\n";
+        
+        return result;
+    }
 }

@@ -6,6 +6,7 @@ package Expressions;
 
 import Abstract.Instruction;
 import Exceptions.Errores;
+import Symbol.Symbol;
 import Symbol.SymbolsTable;
 import Symbol.TipoDato;
 import Symbol.Tree;
@@ -33,7 +34,16 @@ public class ToString extends Instruction {
                 return nativ.interpretar(tree, table).toString();
             }
         }
-        var value = table.getVariable(((VarAcces) this.expression).getId());
+        Symbol value = null;
+        if(this.expression instanceof VarAcces){
+            value = table.getVariable(((VarAcces)this.expression).getId());
+        }
+        if(this.expression instanceof Vector1Acces){
+            value = table.getVariable(((Vector1Acces)this.expression).getId());
+        }
+        if(this.expression instanceof Vector2Acces){
+            value = table.getVariable(((Vector2Acces)this.expression).getId());
+        }
         if (value == null) {
             return new Errores("Semantico", "El struct no existe", this.getLine(), this.getCol());
         }
@@ -48,6 +58,32 @@ public class ToString extends Instruction {
         } else {
             return new Errores("Semantico", "La variable no es un struct, numerico, char o booleanp", this.getLine(), this.getCol());
         }
+    }
+
+    @Override
+    public String createAST(Tree tree, String previous) {
+        String nodoTOSTRING = "n" + tree.getContAST();
+        String nodoRR = "n" + tree.getContAST();
+        String nodoPA = "n" + tree.getContAST();
+        String nodoEXP = "n" + tree.getContAST();
+        String nodoPC = "n" + tree.getContAST();
+
+        String result = nodoTOSTRING + "[label=\"TOSTRING\"];\n";
+        result += previous + " -> " + nodoTOSTRING + ";\n";
+        
+        result += nodoRR + "[label=\"toString\"];\n";
+        result += nodoPA + "[label=\"(\"];\n";
+        result += nodoEXP + "[label=\"EXPRESION\"];\n";
+        result += nodoPC + "[label=\")\"];\n";
+        
+        result += nodoTOSTRING + " -> " + nodoRR + ";\n";
+        result += nodoTOSTRING + " -> " + nodoPA + ";\n";
+        result += nodoTOSTRING + " -> " + nodoEXP + ";\n";
+        result += nodoTOSTRING + " -> " + nodoPC + ";\n";
+        
+        result += ((Instruction) this.expression).createAST(tree, nodoEXP);
+
+        return result;
     }
     
     
