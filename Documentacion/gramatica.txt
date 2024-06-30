@@ -16,6 +16,16 @@ Terminales con minusculas
                 | <FOR>
                 | <BREAK>
                 | <CONTINUE>
+                | <FUNCTION>                              
+                | <START>                                 
+                | <CALLFUNCTION> <;>                      
+                | <RETURN>                                
+                | <VECTORES>                              
+                | <LISTA>                                 
+                | <LISTAAPPEND>                           
+                | <STRUCT>                                
+                | <ISTRUCT>                               
+                | <ASTRUCT>                               
                 | <error> <;>
 
 <PRINT>         ::= <println> <(> <EXPRESSION> <)> <;>
@@ -44,6 +54,62 @@ Terminales con minusculas
 <BREAK>         ::= <break> <;>
 
 <CONTINUE>      ::= <continue> <;>
+
+<FUNCTION>      ::= <TIPO> <id> <(> <)> <{> <INSTRUCCIONES> <}>
+                | <TIPO> <id> <(> <PARAMSLIST> <)> <{> <INSTRUCCIONES> <}>
+
+<PARAMSLIST>    ::= <PARAMSLIST> <,> <TIPOS> <id>
+                | <TIPOS> <id>
+
+<START>         ::= <start_with> <id> <(> <)> <;>
+                | <start_with> <id> <(> <PARAMSCALL> <)> <;>
+
+<PARAMSCALL>    ::= <PARAMSCALL> <;> <EXPRESION>
+                | <EXPRESION>
+
+<CALLFUNCTION>  ::= <id> <(> <)>
+                | <id> <(> <PARAMSCALL> <)>
+
+<RETURN>        ::= <return> <;>
+                | <return> <EXPRESION> <;>
+
+<VECTORES>      ::= <MUTABLE> <id> <:> <TIPOS> <[> <]> < = > <[> <VALORESVEC2> <]> <;>
+                | <MUTABLE> <id> <:> <TIPOS> <[> <]> <[> <]> < = > <[> <VALORESVEC> <]> <;>
+
+<VALORESVEC>    ::= <VALORESVEC> <,> <[> <VALORESVEC2> <]>
+                | <[> <VALORESVEC2> <]>
+
+<VALORESVEC2>   ::= <VALORESVEC2> <,> <EXPRESION>
+                | <EXPRESION>
+
+<LISTA>         ::= <List> < < > <TIPOS> < < > <id> < = > <new> <List> <(> <)> <;>
+
+
+<LISTAREMOVE>   ::= <id> <.> <remove> <(> <EXPRESION> <)>
+
+<LISTAAPPEND>   ::= <id> <.> <append> <(> <EXPRESION> <)>
+
+<STRUCT>        ::= <struct> <{> <STRUCTFIELDS> <}> <id> <;>
+
+<STRUCTFIELDS>  ::= <STRUCTFIELDS> <id> <:> <TIPOS> <;>
+                | <id> <:> <TIPOS> <;>
+
+<ISTRUCT>       ::= <MUTABLE> <id> <:> <id> < = > <{> <STRUCTFIELDSI> <}> <;>
+
+<STRUCTFIELDSI> ::= <STRUCTFIELDSI> <,> <id> <:> <EXPRESION>
+                | <id> <:> <EXPRESION>
+
+<STRUCTACCES>   ::= <id> <.> <id>
+
+<ASTRUCT>       ::= <id> <.> <id> < = > <EXPRESION> <;>
+
+<ROUND>         ::= <round> <(> <EXPRESION> <)>
+
+<LENGTH>        ::= <length> <(> <EXPRESION> <)>
+
+<TOSTRING>      ::= <toString> <(> <EXPRESION> <)>
+
+<FIND>          ::= <id> <.> <find> <(> <EXPRESION> <)>
 
 <MUTABLE>       ::= <var>
                 | <const>
